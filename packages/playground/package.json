@@ -1,0 +1,11 @@
+{
+  "name": "langskin-playground",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "langskin": "workspace:*"
+  }
+}
