@@ -1,9 +1,11 @@
 import { Lexer } from "../src/lex/lexer";
 import { TokenType } from "../src/lex/token";
-import { describe, it, expect, vi } from "vitest";
+import { ErrorReporter } from "../src/errors/reporter";
+import { ErrorPhase } from "../src/errors/types";
+import { describe, it, expect } from "vitest";
 
-function tokenize(source: string) {
-  return new Lexer(source).scanTokens();
+function tokenize(source: string, reporter?: ErrorReporter) {
+  return new Lexer(source, reporter ?? new ErrorReporter()).scanTokens();
 }
 
 describe("Lexer", () => {
@@ -169,10 +171,12 @@ describe("Lexer", () => {
     });
 
     it("should report unterminated strings", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      tokenize('"unterminated');
-      expect(consoleSpy).toHaveBeenCalledWith("Unterminated string.");
-      consoleSpy.mockRestore();
+      const reporter = new ErrorReporter();
+      tokenize('"unterminated', reporter);
+      expect(reporter.hasErrors()).toBe(true);
+      const errors = reporter.getErrors();
+      expect(errors[0].phase).toBe(ErrorPhase.Lexical);
+      expect(errors[0].message).toBe("Unterminated string.");
     });
   });
 
@@ -420,18 +424,21 @@ describe("Lexer", () => {
     });
 
     it("should report unexpected characters", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      tokenize("@");
-      expect(consoleSpy).toHaveBeenCalled();
-      consoleSpy.mockRestore();
+      const reporter = new ErrorReporter();
+      tokenize("@", reporter);
+      expect(reporter.hasErrors()).toBe(true);
+      const errors = reporter.getErrors();
+      expect(errors[0].phase).toBe(ErrorPhase.Lexical);
+      expect(errors[0].message).toBe("Unexpected character.");
+      expect(errors[0].lexeme).toBe("@");
     });
 
     it("should continue after unexpected character", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      const tokens = tokenize("@ 42");
+      const reporter = new ErrorReporter();
+      const tokens = tokenize("@ 42", reporter);
       expect(tokens[0].type).toBe(TokenType.Number);
       expect(tokens[0].literal).toBe(42);
-      consoleSpy.mockRestore();
+      expect(reporter.hasErrors()).toBe(true);
     });
   });
 

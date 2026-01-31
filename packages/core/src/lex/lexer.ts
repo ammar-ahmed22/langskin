@@ -1,4 +1,6 @@
 import { Token, TokenType, tokenTypeFromKeyword } from './token';
+import { ErrorReporter } from '../errors/reporter';
+import { ErrorPhase } from '../errors/types';
 
 export class Lexer {
   private source: string;
@@ -7,9 +9,11 @@ export class Lexer {
   private current: number = 0;
   private line: number = 1;
   private lineStart: number = 0; // Index where current line begins
+  private reporter: ErrorReporter;
 
-  constructor(source: string) {
+  constructor(source: string, reporter: ErrorReporter) {
     this.source = source;
+    this.reporter = reporter;
   }
 
   // Returns the column (0-indexed) of the token's start position
@@ -63,9 +67,13 @@ export class Lexer {
     }
 
     if (this.end()) {
-      // TODO: Report unterminated string error
-      // Maybe use an error reporter class?
-      console.error("Unterminated string.");
+      this.reporter.report({
+        phase: ErrorPhase.Lexical,
+        message: "Unterminated string.",
+        line: this.line,
+        column: this.column,
+      });
+      return;
     }
 
     this.advance(); // The closing "
@@ -233,8 +241,13 @@ export class Lexer {
         } else if (this.isAlpha(char)) {
           this.identifier();
         } else {
-          // TODO: Report unexpected character error
-          console.error(`Unexpected character: ${char} at line ${this.line}, column ${this.column}`);
+          this.reporter.report({
+            phase: ErrorPhase.Lexical,
+            message: "Unexpected character.",
+            line: this.line,
+            column: this.column,
+            lexeme: char,
+          });
         }
     }
   }
