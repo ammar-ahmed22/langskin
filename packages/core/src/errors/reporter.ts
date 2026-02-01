@@ -7,10 +7,16 @@ export class LangError extends Error {
   public line: number;
   public column: number;
   public lexeme: string | undefined;
-  constructor(
-    { phase, message, line, column, lexeme }: LangErrorProps
-  ) {
-    super(`[${ErrorPhase[phase]} Error] on line ${line} at column ${column}: ${message}`);
+  constructor({
+    phase,
+    message,
+    line,
+    column,
+    lexeme,
+  }: LangErrorProps) {
+    super(
+      `[${ErrorPhase[phase]} Error] on line ${line} at column ${column}: ${message}`,
+    );
     this.phase = phase;
     this.message = message;
     this.line = line;
@@ -18,7 +24,11 @@ export class LangError extends Error {
     this.lexeme = lexeme;
   }
 
-  static lexerError(message: string, line: number, column: number): LangError {
+  static lexerError(
+    message: string,
+    line: number,
+    column: number,
+  ): LangError {
     return new LangError({
       phase: ErrorPhase.Lexical,
       message,
@@ -34,7 +44,7 @@ export class LangError extends Error {
       line: token.line,
       column: token.column,
       lexeme: token.lexeme,
-    })
+    });
   }
 }
 

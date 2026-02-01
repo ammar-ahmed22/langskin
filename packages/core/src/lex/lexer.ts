@@ -1,6 +1,5 @@
-import { Token, TokenType, tokenTypeFromKeyword } from './token';
-import { ErrorReporter, LangError } from '../errors/reporter';
-import { ErrorPhase } from '../errors/types';
+import { Token, TokenType, tokenTypeFromKeyword } from "./token";
+import { ErrorReporter, LangError } from "../errors/reporter";
 
 export class Lexer {
   private source: string;
@@ -31,25 +30,28 @@ export class Lexer {
 
   private matchNext(expected: string): boolean {
     if (this.end()) return false;
-    let char = this.source.charAt(this.current);
+    const char = this.source.charAt(this.current);
     if (char !== expected) return false;
     this.current++;
     return true;
   }
 
   private peek(): string {
-    if (this.end()) return '\0';
+    if (this.end()) return "\0";
     return this.source.charAt(this.current);
   }
 
   private peekNext(): string {
-    if (this.current + 1 >= this.source.length) return '\0';
+    if (this.current + 1 >= this.source.length) return "\0";
     return this.source.charAt(this.current + 1);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private addToken(type: TokenType, literal: any = null) {
-    let text = this.source.substring(this.start, this.current);
-    this.tokens.push(new Token(type, text, literal, this.line, this.column));
+    const text = this.source.substring(this.start, this.current);
+    this.tokens.push(
+      new Token(type, text, literal, this.line, this.column),
+    );
   }
 
   private string() {
@@ -58,7 +60,7 @@ export class Lexer {
         this.advance(); // Skip the escape character
       }
 
-      if (this.peek() === '\n') {
+      if (this.peek() === "\n") {
         this.line++;
         this.lineStart = this.current + 1;
       }
@@ -67,30 +69,45 @@ export class Lexer {
     }
 
     if (this.end()) {
-      this.reporter.report(LangError.lexerError("Unterminated string.", this.line, this.column));
+      this.reporter.report(
+        LangError.lexerError(
+          "Unterminated string.",
+          this.line,
+          this.column,
+        ),
+      );
       return;
     }
 
     this.advance(); // The closing "
 
-    let value = this.source.substring(this.start + 1, this.current - 1);
+    const value = this.source.substring(
+      this.start + 1,
+      this.current - 1,
+    );
     this.addToken(TokenType.String, value);
   }
-  
+
   private assertChar(c: string) {
     if (c.length !== 1) {
-      throw new Error("assertChar expects a single character string.");
+      throw new Error(
+        "assertChar expects a single character string.",
+      );
     }
   }
 
   private isDigit(char: string): boolean {
     this.assertChar(char);
-    return char >= '0' && char <= '9';
+    return char >= "0" && char <= "9";
   }
 
   private isAlpha(char: string): boolean {
     this.assertChar(char);
-    return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || char === '_';
+    return (
+      (char >= "a" && char <= "z") ||
+      (char >= "A" && char <= "Z") ||
+      char === "_"
+    );
   }
 
   private isAlphaNumeric(char: string): boolean {
@@ -103,7 +120,7 @@ export class Lexer {
       this.advance();
     }
 
-    if (this.peek() === '.' && this.isDigit(this.peekNext())) {
+    if (this.peek() === "." && this.isDigit(this.peekNext())) {
       this.advance(); // consume the "."
       // Consume the fractional part
       while (this.isDigit(this.peek())) {
@@ -111,7 +128,9 @@ export class Lexer {
       }
     }
 
-    let value = parseFloat(this.source.substring(this.start, this.current));
+    const value = parseFloat(
+      this.source.substring(this.start, this.current),
+    );
     this.addToken(TokenType.Number, value);
   }
 
@@ -120,9 +139,9 @@ export class Lexer {
       this.advance();
     }
 
-    let text = this.source.substring(this.start, this.current);
+    const text = this.source.substring(this.start, this.current);
     // TODO: Add spec here
-    let type = tokenTypeFromKeyword(text, {});
+    const type = tokenTypeFromKeyword(text, {});
     if (type === null) {
       this.addToken(TokenType.Identifier);
     } else {
@@ -131,101 +150,113 @@ export class Lexer {
   }
 
   private scanToken() {
-    let char = this.advance();
+    const char = this.advance();
     switch (char) {
-      case '(':
+      case "(":
         this.addToken(TokenType.LeftParen);
         break;
-      case ')':
+      case ")":
         this.addToken(TokenType.RightParen);
         break;
-      case '{':
+      case "{":
         this.addToken(TokenType.LeftBrace);
         break;
-      case '}':
+      case "}":
         this.addToken(TokenType.RightBrace);
         break;
-      case ']':
+      case "]":
         this.addToken(TokenType.RightSquare);
         break;
-      case '[':
+      case "[":
         this.addToken(TokenType.LeftSquare);
         break;
-      case ',':
+      case ",":
         this.addToken(TokenType.Comma);
         break;
-      case '.':
+      case ".":
         this.addToken(TokenType.Dot);
         break;
-      case '-':
-        if (this.matchNext('-')) {
+      case "-":
+        if (this.matchNext("-")) {
           this.addToken(TokenType.Decrement);
-        } else if (this.matchNext('=')) {
+        } else if (this.matchNext("=")) {
           this.addToken(TokenType.MinusEqual);
         } else {
           this.addToken(TokenType.Minus);
         }
         break;
-      case '+':
-        if (this.matchNext('+')) {
+      case "+":
+        if (this.matchNext("+")) {
           this.addToken(TokenType.Increment);
-        } else if (this.matchNext('=')) {
+        } else if (this.matchNext("=")) {
           this.addToken(TokenType.PlusEqual);
         } else {
           this.addToken(TokenType.Plus);
         }
         break;
-      case ';':
+      case ";":
         this.addToken(TokenType.Semicolon);
         break;
-      case '*':
-        if (this.matchNext('=')) {
+      case "*":
+        if (this.matchNext("=")) {
           this.addToken(TokenType.StarEqual);
         } else {
           this.addToken(TokenType.Star);
         }
         break;
-      case '%':
+      case "%":
         this.addToken(TokenType.Modulo);
         break;
-      case '!':
-        this.addToken(this.matchNext('=') ? TokenType.BangEqual : TokenType.Bang);
+      case "!":
+        this.addToken(
+          this.matchNext("=") ? TokenType.BangEqual : TokenType.Bang,
+        );
         break;
-      case '=':
-        this.addToken(this.matchNext('=') ? TokenType.EqualEqual : TokenType.Equal);
+      case "=":
+        this.addToken(
+          this.matchNext("=")
+            ? TokenType.EqualEqual
+            : TokenType.Equal,
+        );
         break;
-      case '<':
-        this.addToken(this.matchNext('=') ? TokenType.LessEqual : TokenType.Less);
+      case "<":
+        this.addToken(
+          this.matchNext("=") ? TokenType.LessEqual : TokenType.Less,
+        );
         break;
-      case '>':
-        this.addToken(this.matchNext('=') ? TokenType.GreaterEqual : TokenType.Greater);
+      case ">":
+        this.addToken(
+          this.matchNext("=")
+            ? TokenType.GreaterEqual
+            : TokenType.Greater,
+        );
         break;
-      case '&':
-        if (this.matchNext('&')) {
+      case "&":
+        if (this.matchNext("&")) {
           this.addToken(TokenType.And);
         }
         break;
-      case '|':
-        if (this.matchNext('|')) {
+      case "|":
+        if (this.matchNext("|")) {
           this.addToken(TokenType.Or);
         }
         break;
-      case '/':
-        if (this.matchNext('/')) {
+      case "/":
+        if (this.matchNext("/")) {
           // A comment goes until the end of the line.
-          while (this.peek() !== '\n' && !this.end()) this.advance();
-        } else if (this.matchNext('=')) {
+          while (this.peek() !== "\n" && !this.end()) this.advance();
+        } else if (this.matchNext("=")) {
           this.addToken(TokenType.SlashEqual);
         } else {
           this.addToken(TokenType.Slash);
         }
         break;
-      case ' ':
-      case '\r':
-      case '\t':
+      case " ":
+      case "\r":
+      case "\t":
         // Ignore whitespace.
         break;
-      case '\n':
+      case "\n":
         this.line++;
         this.lineStart = this.current;
         break;
@@ -238,7 +269,13 @@ export class Lexer {
         } else if (this.isAlpha(char)) {
           this.identifier();
         } else {
-          this.reporter.report(LangError.lexerError("Unexpected character.", this.line, this.column));
+          this.reporter.report(
+            LangError.lexerError(
+              "Unexpected character.",
+              this.line,
+              this.column,
+            ),
+          );
         }
     }
   }
@@ -249,8 +286,15 @@ export class Lexer {
       this.scanToken();
     }
 
-    this.tokens.push(new Token(TokenType.Eof, "", null, this.line, this.current - this.lineStart));
+    this.tokens.push(
+      new Token(
+        TokenType.Eof,
+        "",
+        null,
+        this.line,
+        this.current - this.lineStart,
+      ),
+    );
     return this.tokens;
   }
-
 }

@@ -2,8 +2,7 @@ import { Lexer } from "../src/lex/lexer";
 import { ErrorReporter, LangError } from "../src/errors/reporter";
 import { ErrorPhase } from "../src/errors/types";
 import { Parser } from "../src/parse/parser";
-import Expr from "../src/ast/expr";
-import Stmt from "../src/ast/stmt";
+import { Expr, Stmt } from "../src/ast";
 import { describe, it, expect } from "vitest";
 import { TokenType } from "../src/lex/token";
 
@@ -20,7 +19,10 @@ function parseExpr(source: string): Expr.Expression {
   return exprStmt.expression;
 }
 
-function expectSyntaxError(source: string, expectedMessage?: string): LangError {
+function expectSyntaxError(
+  source: string,
+  expectedMessage?: string,
+): LangError {
   try {
     parse(source);
     throw new Error("Expected syntax error but parsing succeeded");
@@ -156,61 +158,81 @@ describe("Parser", () => {
     it("should parse subtraction", () => {
       const expr = parseExpr("5 - 3");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.Minus);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.Minus,
+      );
     });
 
     it("should parse multiplication", () => {
       const expr = parseExpr("4 * 2");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.Star);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.Star,
+      );
     });
 
     it("should parse division", () => {
       const expr = parseExpr("10 / 2");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.Slash);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.Slash,
+      );
     });
 
     it("should parse modulo", () => {
       const expr = parseExpr("10 % 3");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.Modulo);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.Modulo,
+      );
     });
 
     it("should parse less than", () => {
       const expr = parseExpr("1 < 2");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.Less);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.Less,
+      );
     });
 
     it("should parse less than or equal", () => {
       const expr = parseExpr("1 <= 2");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.LessEqual);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.LessEqual,
+      );
     });
 
     it("should parse greater than", () => {
       const expr = parseExpr("2 > 1");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.Greater);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.Greater,
+      );
     });
 
     it("should parse greater than or equal", () => {
       const expr = parseExpr("2 >= 1");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.GreaterEqual);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.GreaterEqual,
+      );
     });
 
     it("should parse equality", () => {
       const expr = parseExpr("1 == 1");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.EqualEqual);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.EqualEqual,
+      );
     });
 
     it("should parse inequality", () => {
       const expr = parseExpr("1 != 2");
       expect(expr).toBeInstanceOf(Expr.Binary);
-      expect((expr as Expr.Binary).operator.type).toBe(TokenType.BangEqual);
+      expect((expr as Expr.Binary).operator.type).toBe(
+        TokenType.BangEqual,
+      );
     });
   });
 
@@ -218,13 +240,17 @@ describe("Parser", () => {
     it("should parse 'and' keyword", () => {
       const expr = parseExpr("true and false");
       expect(expr).toBeInstanceOf(Expr.Logical);
-      expect((expr as Expr.Logical).operator.type).toBe(TokenType.And);
+      expect((expr as Expr.Logical).operator.type).toBe(
+        TokenType.And,
+      );
     });
 
     it("should parse && operator", () => {
       const expr = parseExpr("true && false");
       expect(expr).toBeInstanceOf(Expr.Logical);
-      expect((expr as Expr.Logical).operator.type).toBe(TokenType.And);
+      expect((expr as Expr.Logical).operator.type).toBe(
+        TokenType.And,
+      );
     });
 
     it("should parse 'or' keyword", () => {
@@ -246,7 +272,9 @@ describe("Parser", () => {
       const logical = expr as Expr.Logical;
       expect(logical.operator.type).toBe(TokenType.Or);
       expect(logical.right).toBeInstanceOf(Expr.Logical);
-      expect((logical.right as Expr.Logical).operator.type).toBe(TokenType.And);
+      expect((logical.right as Expr.Logical).operator.type).toBe(
+        TokenType.And,
+      );
     });
   });
 
@@ -258,7 +286,9 @@ describe("Parser", () => {
       const binary = expr as Expr.Binary;
       expect(binary.operator.type).toBe(TokenType.Plus);
       expect(binary.right).toBeInstanceOf(Expr.Binary);
-      expect((binary.right as Expr.Binary).operator.type).toBe(TokenType.Star);
+      expect((binary.right as Expr.Binary).operator.type).toBe(
+        TokenType.Star,
+      );
     });
 
     it("should respect comparison over equality", () => {
@@ -302,7 +332,9 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Assign);
       const assign = expr as Expr.Assign;
       expect(assign.value).toBeInstanceOf(Expr.Binary);
-      expect((assign.value as Expr.Binary).operator.type).toBe(TokenType.Plus);
+      expect((assign.value as Expr.Binary).operator.type).toBe(
+        TokenType.Plus,
+      );
     });
 
     it("should parse -= compound assignment", () => {
@@ -310,7 +342,9 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Assign);
       const assign = expr as Expr.Assign;
       expect(assign.value).toBeInstanceOf(Expr.Binary);
-      expect((assign.value as Expr.Binary).operator.type).toBe(TokenType.Minus);
+      expect((assign.value as Expr.Binary).operator.type).toBe(
+        TokenType.Minus,
+      );
     });
 
     it("should parse *= compound assignment", () => {
@@ -318,7 +352,9 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Assign);
       const assign = expr as Expr.Assign;
       expect(assign.value).toBeInstanceOf(Expr.Binary);
-      expect((assign.value as Expr.Binary).operator.type).toBe(TokenType.Star);
+      expect((assign.value as Expr.Binary).operator.type).toBe(
+        TokenType.Star,
+      );
     });
 
     it("should parse /= compound assignment", () => {
@@ -326,7 +362,9 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Assign);
       const assign = expr as Expr.Assign;
       expect(assign.value).toBeInstanceOf(Expr.Binary);
-      expect((assign.value as Expr.Binary).operator.type).toBe(TokenType.Slash);
+      expect((assign.value as Expr.Binary).operator.type).toBe(
+        TokenType.Slash,
+      );
     });
 
     it("should parse ++ increment", () => {
@@ -411,7 +449,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing semicolon after variable", () => {
-      expectSyntaxError("let x = 42", "Expect ';' after variable declaration.");
+      expectSyntaxError(
+        "let x = 42",
+        "Expect ';' after variable declaration.",
+      );
     });
   });
 
@@ -450,7 +491,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing ) after if condition", () => {
-      expectSyntaxError("if (true print 1;", "Expect ')' after 'if' condition.");
+      expectSyntaxError(
+        "if (true print 1;",
+        "Expect ')' after 'if' condition.",
+      );
     });
   });
 
@@ -470,7 +514,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing ( after while", () => {
-      expectSyntaxError("while true) print 1;", "Expect '(' after 'while'");
+      expectSyntaxError(
+        "while true) print 1;",
+        "Expect '(' after 'while'",
+      );
     });
   });
 
@@ -508,7 +555,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing ( after for", () => {
-      expectSyntaxError("for let i = 0; i < 10; i++) print i;", "Expect '(' after 'for'");
+      expectSyntaxError(
+        "for let i = 0; i < 10; i++) print i;",
+        "Expect '(' after 'for'",
+      );
     });
   });
 
@@ -549,16 +599,28 @@ describe("Parser", () => {
     });
 
     it("should error on missing ( after function name", () => {
-      expectSyntaxError("fun foo {}", "Expect '(' after function name.");
+      expectSyntaxError(
+        "fun foo {}",
+        "Expect '(' after function name.",
+      );
     });
 
     it("should error on missing ) after parameters", () => {
-      expectSyntaxError("fun foo(a, b {}", "Expect ')' after parameters.");
+      expectSyntaxError(
+        "fun foo(a, b {}",
+        "Expect ')' after parameters.",
+      );
     });
 
     it("should error on too many parameters", () => {
-      const params = Array.from({ length: 256 }, (_, i) => `p${i}`).join(", ");
-      expectSyntaxError(`fun foo(${params}) {}`, "Can't have more than 255 parameters.");
+      const params = Array.from(
+        { length: 256 },
+        (_, i) => `p${i}`,
+      ).join(", ");
+      expectSyntaxError(
+        `fun foo(${params}) {}`,
+        "Can't have more than 255 parameters.",
+      );
     });
   });
 
@@ -584,7 +646,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing semicolon after return", () => {
-      expectSyntaxError("return 42", "Expect ';' after 'return' value");
+      expectSyntaxError(
+        "return 42",
+        "Expect ';' after 'return' value",
+      );
     });
   });
 
@@ -599,7 +664,9 @@ describe("Parser", () => {
     });
 
     it("should parse class with methods", () => {
-      const stmts = parse("class Foo { bar() { return 1; } baz(x) { return x; } }");
+      const stmts = parse(
+        "class Foo { bar() { return 1; } baz(x) { return x; } }",
+      );
       const cls = stmts[0] as Stmt.Class;
       expect(cls.methods).toHaveLength(2);
     });
@@ -608,7 +675,9 @@ describe("Parser", () => {
       const stmts = parse("class Child inherits Parent {}");
       const cls = stmts[0] as Stmt.Class;
       expect(cls.superclass).toBeInstanceOf(Expr.Variable);
-      expect((cls.superclass as Expr.Variable).name.lexeme).toBe("Parent");
+      expect((cls.superclass as Expr.Variable).name.lexeme).toBe(
+        "Parent",
+      );
     });
 
     it("should error on missing class name", () => {
@@ -616,7 +685,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing { before class body", () => {
-      expectSyntaxError("class Foo }", "Expect '{' before 'class' body.");
+      expectSyntaxError(
+        "class Foo }",
+        "Expect '{' before 'class' body.",
+      );
     });
   });
 
@@ -681,8 +753,13 @@ describe("Parser", () => {
     });
 
     it("should error on too many arguments", () => {
-      const args = Array.from({ length: 256 }, (_, i) => i).join(", ");
-      expectSyntaxError(`foo(${args});`, "Can't have more than 255 arguments.");
+      const args = Array.from({ length: 256 }, (_, i) => i).join(
+        ", ",
+      );
+      expectSyntaxError(
+        `foo(${args});`,
+        "Can't have more than 255 arguments.",
+      );
     });
 
     it("should error on missing ) after arguments", () => {

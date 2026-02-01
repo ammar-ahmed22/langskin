@@ -5,7 +5,10 @@ import { ErrorPhase } from "../src/errors/types";
 import { describe, it, expect } from "vitest";
 
 function tokenize(source: string, reporter?: ErrorReporter) {
-  return new Lexer(source, reporter ?? new ErrorReporter()).scanTokens();
+  return new Lexer(
+    source,
+    reporter ?? new ErrorReporter(),
+  ).scanTokens();
 }
 
 describe("Lexer", () => {
@@ -397,9 +400,9 @@ describe("Lexer", () => {
 
     it("should track correct column for multi-character tokens", () => {
       const tokens = tokenize("let foo = 123;");
-      expect(tokens[0].column).toBe(0);  // 'let' at column 0
-      expect(tokens[1].column).toBe(4);  // 'foo' at column 4
-      expect(tokens[2].column).toBe(8);  // '=' at column 8
+      expect(tokens[0].column).toBe(0); // 'let' at column 0
+      expect(tokens[1].column).toBe(4); // 'foo' at column 4
+      expect(tokens[2].column).toBe(8); // '=' at column 8
       expect(tokens[3].column).toBe(10); // '123' at column 10
       expect(tokens[4].column).toBe(13); // ';' at column 13
     });
@@ -476,7 +479,9 @@ describe("Lexer", () => {
     });
 
     it("should tokenize an if-else statement", () => {
-      const tokens = tokenize("if (x > 0) { print x; } else { print 0; }");
+      const tokens = tokenize(
+        "if (x > 0) { print x; } else { print 0; }",
+      );
       expect(tokens[0].type).toBe(TokenType.If);
       expect(tokens[1].type).toBe(TokenType.LeftParen);
       expect(tokens[2].type).toBe(TokenType.Identifier);

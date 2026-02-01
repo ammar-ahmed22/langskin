@@ -1,5 +1,4 @@
-// import { Expression, Print, Var, Block, If, While, FunctionStmt, Return, Class } from "./stmt";
-import Stmt from "./stmt";
+import { Stmt } from ".";
 
 export abstract class StmtVisitor<T> {
   abstract visitExpressionStmt(stmt: Stmt.Expression): T;
@@ -11,5 +10,4 @@ export abstract class StmtVisitor<T> {
   abstract visitFunctionStmt(stmt: Stmt.FunctionStmt): T;
   abstract visitReturnStmt(stmt: Stmt.Return): T;
   abstract visitClassStmt(stmt: Stmt.Class): T;
-  
 }

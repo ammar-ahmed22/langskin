@@ -1,5 +1,3 @@
-
-
 export enum TokenType {
   LeftParen,
   RightParen,
@@ -61,7 +59,12 @@ export enum TokenType {
   Eof,
 }
 
-export function tokenTypeFromKeyword(keyword: string, spec: any): TokenType | null {
+export function tokenTypeFromKeyword(
+  keyword: string,
+  // TODO: Define a proper spec type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  spec: any,
+): TokenType | null {
   // TODO: This should be based on the passed in spec afterwords
   // i.e. users can define their own keywords
   switch (keyword) {
@@ -117,9 +120,10 @@ export class Token {
     public type: TokenType,
     public lexeme: string,
     // TODO: Maybe this will be it's own object later
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public literal: any,
     public line: number,
-    public column: number
+    public column: number,
   ) {}
 
   toString(): string {

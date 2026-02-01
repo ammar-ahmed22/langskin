@@ -92,12 +92,14 @@ describe("ErrorReporter", () => {
 
     reporter.report(props);
     const errors = reporter.getErrors();
-    errors.push(new LangError({
-      phase: ErrorPhase.Syntax,
-      message: "Pushed externally",
-      line: 2,
-      column: 0,
-    }));
+    errors.push(
+      new LangError({
+        phase: ErrorPhase.Syntax,
+        message: "Pushed externally",
+        line: 2,
+        column: 0,
+      }),
+    );
 
     expect(reporter.getErrors()).toHaveLength(1);
   });
