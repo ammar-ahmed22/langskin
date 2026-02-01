@@ -46,6 +46,16 @@ export class LangError extends Error {
       lexeme: token.lexeme,
     });
   }
+
+  static runtimeError(message: string, token: Token): LangError {
+    return new LangError({
+      phase: ErrorPhase.Runtime,
+      message,
+      line: token.line,
+      column: token.column,
+      lexeme: token.lexeme,
+    });
+  }
 }
 
 export type ErrorCallback = (error: LangError) => void;

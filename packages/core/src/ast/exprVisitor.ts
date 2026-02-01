@@ -1,5 +1,4 @@
-// import { Assign, Binary, Grouping, Literal, Unary, Variable, Logical, Call, Get, Set, This, SetIndexed, GetIndexed, ArrayExpr, Super } from "./expr";
-import Expr from "./expr";
+import { Expr } from ".";
 
 export abstract class ExprVisitor<T> {
   abstract visitAssignExpr(expr: Expr.Assign): T;

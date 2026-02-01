@@ -1,4 +1,5 @@
 import { Token } from "../lex/token";
+import { Literal } from "../runtime/literal";
 import { ExprVisitor } from "./exprVisitor";
 
 export abstract class Expression {
@@ -42,9 +43,8 @@ export class Grouping extends Expression {
   }
 }
 
-export class Literal extends Expression {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(public value: any) {
+export class LiteralExpr extends Expression {
+  constructor(public value: Literal) {
     super();
   }
 

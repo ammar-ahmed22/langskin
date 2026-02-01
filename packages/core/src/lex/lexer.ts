@@ -1,5 +1,6 @@
 import { Token, TokenType, tokenTypeFromKeyword } from "./token";
 import { ErrorReporter, LangError } from "../errors/reporter";
+import { Literal } from "../runtime/literal";
 
 export class Lexer {
   private source: string;
@@ -46,11 +47,16 @@ export class Lexer {
     return this.source.charAt(this.current + 1);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private addToken(type: TokenType, literal: any = null) {
+  private addToken(type: TokenType, literal?: Literal) {
     const text = this.source.substring(this.start, this.current);
     this.tokens.push(
-      new Token(type, text, literal, this.line, this.column),
+      new Token(
+        type,
+        text,
+        literal ?? Literal.nil(),
+        this.line,
+        this.column,
+      ),
     );
   }
 
@@ -85,7 +91,7 @@ export class Lexer {
       this.start + 1,
       this.current - 1,
     );
-    this.addToken(TokenType.String, value);
+    this.addToken(TokenType.String, Literal.string(value));
   }
 
   private assertChar(c: string) {
@@ -131,7 +137,7 @@ export class Lexer {
     const value = parseFloat(
       this.source.substring(this.start, this.current),
     );
-    this.addToken(TokenType.Number, value);
+    this.addToken(TokenType.Number, Literal.number(value));
   }
 
   private identifier() {
@@ -290,7 +296,7 @@ export class Lexer {
       new Token(
         TokenType.Eof,
         "",
-        null,
+        Literal.nil(),
         this.line,
         this.current - this.lineStart,
       ),

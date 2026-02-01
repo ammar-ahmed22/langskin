@@ -1,6 +1,7 @@
 import { Expr, Stmt } from "../ast";
 import { LangError } from "../errors/reporter";
 import { Token, TokenType } from "../lex/token";
+import { Literal } from "../runtime/literal";
 
 export class Parser {
   private tokens: Token[];
@@ -303,7 +304,7 @@ export class Parser {
 
     let whileCondition = condition;
     if (whileCondition === null) {
-      whileCondition = new Expr.Literal(true);
+      whileCondition = new Expr.LiteralExpr(Literal.bool(true));
     }
 
     body = new Stmt.While(whileCondition, body);
@@ -419,7 +420,7 @@ export class Parser {
             new Token(
               operatorType,
               equals.lexeme.charAt(0),
-              null,
+              Literal.nil(),
               equals.line,
               equals.column,
             ),
@@ -435,7 +436,7 @@ export class Parser {
             new Token(
               operatorType,
               equals.lexeme.charAt(0),
-              null,
+              Literal.nil(),
               equals.line,
               equals.column,
             ),
@@ -451,7 +452,7 @@ export class Parser {
             new Token(
               operatorType,
               equals.lexeme.charAt(0),
-              null,
+              Literal.nil(),
               equals.line,
               equals.column,
             ),
@@ -474,7 +475,7 @@ export class Parser {
         operator = new Token(
           TokenType.Plus,
           "+",
-          null,
+          Literal.nil(),
           equals.line,
           equals.column,
         );
@@ -482,7 +483,7 @@ export class Parser {
         operator = new Token(
           TokenType.Minus,
           "-",
-          null,
+          Literal.nil(),
           equals.line,
           equals.column,
         );
@@ -491,19 +492,31 @@ export class Parser {
       if (expr instanceof Expr.Variable) {
         return new Expr.Assign(
           expr.name,
-          new Expr.Binary(expr, operator, new Expr.Literal(1)),
+          new Expr.Binary(
+            expr,
+            operator,
+            new Expr.LiteralExpr(Literal.number(1)),
+          ),
         );
       } else if (expr instanceof Expr.Get) {
         return new Expr.Set(
           expr.object,
           expr.name,
-          new Expr.Binary(expr, operator, new Expr.Literal(1)),
+          new Expr.Binary(
+            expr,
+            operator,
+            new Expr.LiteralExpr(Literal.number(1)),
+          ),
         );
       } else if (expr instanceof Expr.GetIndexed) {
         return new Expr.SetIndexed(
           expr.object,
           expr.index,
-          new Expr.Binary(expr, operator, new Expr.Literal(1)),
+          new Expr.Binary(
+            expr,
+            operator,
+            new Expr.LiteralExpr(Literal.number(1)),
+          ),
           expr.bracket,
         );
       } else {
@@ -651,19 +664,19 @@ export class Parser {
 
   private primary(): Expr.Expression {
     if (this.matchTypes(TokenType.False)) {
-      return new Expr.Literal(false);
+      return new Expr.LiteralExpr(Literal.bool(false));
     }
 
     if (this.matchTypes(TokenType.True)) {
-      return new Expr.Literal(true);
+      return new Expr.LiteralExpr(Literal.bool(true));
     }
 
     if (this.matchTypes(TokenType.Nil)) {
-      return new Expr.Literal(null);
+      return new Expr.LiteralExpr(Literal.nil());
     }
 
     if (this.matchTypes(TokenType.Number, TokenType.String)) {
-      return new Expr.Literal(this.previous().literal);
+      return new Expr.LiteralExpr(this.previous().literal);
     }
 
     if (this.matchTypes(TokenType.Super)) {

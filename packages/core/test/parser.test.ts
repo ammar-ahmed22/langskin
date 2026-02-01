@@ -5,6 +5,7 @@ import { Parser } from "../src/parse/parser";
 import { Expr, Stmt } from "../src/ast";
 import { describe, it, expect } from "vitest";
 import { TokenType } from "../src/lex/token";
+import { NilLiteral } from "../src/runtime/literal";
 
 function parse(source: string): Stmt.Statement[] {
   const reporter = new ErrorReporter();
@@ -41,38 +42,40 @@ describe("Parser", () => {
   describe("literals and primary expressions", () => {
     it("should parse number literals", () => {
       const expr = parseExpr("42");
-      expect(expr).toBeInstanceOf(Expr.Literal);
-      expect((expr as Expr.Literal).value).toBe(42);
+      expect(expr).toBeInstanceOf(Expr.LiteralExpr);
+      expect((expr as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse floating point numbers", () => {
       const expr = parseExpr("3.14");
-      expect(expr).toBeInstanceOf(Expr.Literal);
-      expect((expr as Expr.Literal).value).toBe(3.14);
+      expect(expr).toBeInstanceOf(Expr.LiteralExpr);
+      expect((expr as Expr.LiteralExpr).value.value).toBe(3.14);
     });
 
     it("should parse string literals", () => {
       const expr = parseExpr('"hello"');
-      expect(expr).toBeInstanceOf(Expr.Literal);
-      expect((expr as Expr.Literal).value).toBe("hello");
+      expect(expr).toBeInstanceOf(Expr.LiteralExpr);
+      expect((expr as Expr.LiteralExpr).value.value).toBe("hello");
     });
 
     it("should parse true", () => {
       const expr = parseExpr("true");
-      expect(expr).toBeInstanceOf(Expr.Literal);
-      expect((expr as Expr.Literal).value).toBe(true);
+      expect(expr).toBeInstanceOf(Expr.LiteralExpr);
+      expect((expr as Expr.LiteralExpr).value.value).toBe(true);
     });
 
     it("should parse false", () => {
       const expr = parseExpr("false");
-      expect(expr).toBeInstanceOf(Expr.Literal);
-      expect((expr as Expr.Literal).value).toBe(false);
+      expect(expr).toBeInstanceOf(Expr.LiteralExpr);
+      expect((expr as Expr.LiteralExpr).value.value).toBe(false);
     });
 
     it("should parse nil", () => {
       const expr = parseExpr("nil");
-      expect(expr).toBeInstanceOf(Expr.Literal);
-      expect((expr as Expr.Literal).value).toBe(null);
+      expect(expr).toBeInstanceOf(Expr.LiteralExpr);
+      expect((expr as Expr.LiteralExpr).value).toBeInstanceOf(
+        NilLiteral,
+      );
     });
 
     it("should parse identifiers", () => {
@@ -85,8 +88,8 @@ describe("Parser", () => {
       const expr = parseExpr("(42)");
       expect(expr).toBeInstanceOf(Expr.Grouping);
       const inner = (expr as Expr.Grouping).expression;
-      expect(inner).toBeInstanceOf(Expr.Literal);
-      expect((inner as Expr.Literal).value).toBe(42);
+      expect(inner).toBeInstanceOf(Expr.LiteralExpr);
+      expect((inner as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse empty array literals", () => {
@@ -100,9 +103,9 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.ArrayExpr);
       const arr = expr as Expr.ArrayExpr;
       expect(arr.values).toHaveLength(3);
-      expect((arr.values[0] as Expr.Literal).value).toBe(1);
-      expect((arr.values[1] as Expr.Literal).value).toBe(2);
-      expect((arr.values[2] as Expr.Literal).value).toBe(3);
+      expect((arr.values[0] as Expr.LiteralExpr).value.value).toBe(1);
+      expect((arr.values[1] as Expr.LiteralExpr).value.value).toBe(2);
+      expect((arr.values[2] as Expr.LiteralExpr).value.value).toBe(3);
     });
 
     it("should parse nested arrays", () => {
@@ -120,7 +123,7 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Unary);
       const unary = expr as Expr.Unary;
       expect(unary.operator.type).toBe(TokenType.Minus);
-      expect((unary.right as Expr.Literal).value).toBe(42);
+      expect((unary.right as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse logical not with !", () => {
@@ -151,8 +154,8 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Binary);
       const binary = expr as Expr.Binary;
       expect(binary.operator.type).toBe(TokenType.Plus);
-      expect((binary.left as Expr.Literal).value).toBe(1);
-      expect((binary.right as Expr.Literal).value).toBe(2);
+      expect((binary.left as Expr.LiteralExpr).value.value).toBe(1);
+      expect((binary.right as Expr.LiteralExpr).value.value).toBe(2);
     });
 
     it("should parse subtraction", () => {
@@ -316,7 +319,7 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Assign);
       const assign = expr as Expr.Assign;
       expect(assign.name.lexeme).toBe("x");
-      expect((assign.value as Expr.Literal).value).toBe(42);
+      expect((assign.value as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse chained assignment", () => {
@@ -374,7 +377,7 @@ describe("Parser", () => {
       expect(assign.value).toBeInstanceOf(Expr.Binary);
       const binary = assign.value as Expr.Binary;
       expect(binary.operator.type).toBe(TokenType.Plus);
-      expect((binary.right as Expr.Literal).value).toBe(1);
+      expect((binary.right as Expr.LiteralExpr).value.value).toBe(1);
     });
 
     it("should parse -- decrement", () => {
@@ -391,15 +394,15 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.Set);
       const set = expr as Expr.Set;
       expect(set.name.lexeme).toBe("prop");
-      expect((set.value as Expr.Literal).value).toBe(42);
+      expect((set.value as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse indexed assignment", () => {
       const expr = parseExpr("arr[0] = 42");
       expect(expr).toBeInstanceOf(Expr.SetIndexed);
       const set = expr as Expr.SetIndexed;
-      expect((set.index as Expr.Literal).value).toBe(0);
-      expect((set.value as Expr.Literal).value).toBe(42);
+      expect((set.index as Expr.LiteralExpr).value.value).toBe(0);
+      expect((set.value as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse compound assignment on property", () => {
@@ -434,8 +437,10 @@ describe("Parser", () => {
       expect(stmts).toHaveLength(1);
       const varStmt = stmts[0] as Stmt.Var;
       expect(varStmt.name.lexeme).toBe("x");
-      expect(varStmt.initializer).toBeInstanceOf(Expr.Literal);
-      expect((varStmt.initializer as Expr.Literal).value).toBe(42);
+      expect(varStmt.initializer).toBeInstanceOf(Expr.LiteralExpr);
+      expect(
+        (varStmt.initializer as Expr.LiteralExpr).value.value,
+      ).toBe(42);
     });
 
     it("should parse variable with expression initializer", () => {
@@ -461,7 +466,7 @@ describe("Parser", () => {
       const stmts = parse("if (true) print 1;");
       expect(stmts[0]).toBeInstanceOf(Stmt.If);
       const ifStmt = stmts[0] as Stmt.If;
-      expect(ifStmt.condition).toBeInstanceOf(Expr.Literal);
+      expect(ifStmt.condition).toBeInstanceOf(Expr.LiteralExpr);
       expect(ifStmt.thenBranch).toBeInstanceOf(Stmt.Print);
       expect(ifStmt.elseBranch).toBeNull();
     });
@@ -503,7 +508,7 @@ describe("Parser", () => {
       const stmts = parse("while (true) print 1;");
       expect(stmts[0]).toBeInstanceOf(Stmt.While);
       const whileStmt = stmts[0] as Stmt.While;
-      expect(whileStmt.condition).toBeInstanceOf(Expr.Literal);
+      expect(whileStmt.condition).toBeInstanceOf(Expr.LiteralExpr);
       expect(whileStmt.body).toBeInstanceOf(Stmt.Print);
     });
 
@@ -635,8 +640,8 @@ describe("Parser", () => {
     it("should parse return with value", () => {
       const stmts = parse("return 42;");
       const ret = stmts[0] as Stmt.Return;
-      expect(ret.value).toBeInstanceOf(Expr.Literal);
-      expect((ret.value as Expr.Literal).value).toBe(42);
+      expect(ret.value).toBeInstanceOf(Expr.LiteralExpr);
+      expect((ret.value as Expr.LiteralExpr).value.value).toBe(42);
     });
 
     it("should parse return with expression", () => {
@@ -802,7 +807,7 @@ describe("Parser", () => {
       expect(expr).toBeInstanceOf(Expr.GetIndexed);
       const get = expr as Expr.GetIndexed;
       expect((get.object as Expr.Variable).name.lexeme).toBe("arr");
-      expect((get.index as Expr.Literal).value).toBe(0);
+      expect((get.index as Expr.LiteralExpr).value.value).toBe(0);
     });
 
     it("should parse indexed with variable", () => {
@@ -858,7 +863,7 @@ describe("Parser", () => {
       const stmts = parse("print 42;");
       expect(stmts[0]).toBeInstanceOf(Stmt.Print);
       const print = stmts[0] as Stmt.Print;
-      expect(print.expression).toBeInstanceOf(Expr.Literal);
+      expect(print.expression).toBeInstanceOf(Expr.LiteralExpr);
     });
 
     it("should parse print with expression", () => {

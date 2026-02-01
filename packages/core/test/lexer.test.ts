@@ -129,16 +129,16 @@ describe("Lexer", () => {
     it("should tokenize code before comments", () => {
       const tokens = tokenize("42 // comment");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(42);
+      expect(tokens[0].literal.value).toBe(42);
       expect(tokens[1].type).toBe(TokenType.Eof);
     });
 
     it("should handle comments followed by newline and more code", () => {
       const tokens = tokenize("1 // comment\n2");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(1);
+      expect(tokens[0].literal.value).toBe(1);
       expect(tokens[1].type).toBe(TokenType.Number);
-      expect(tokens[1].literal).toBe(2);
+      expect(tokens[1].literal.value).toBe(2);
     });
   });
 
@@ -146,25 +146,25 @@ describe("Lexer", () => {
     it("should tokenize simple strings", () => {
       const tokens = tokenize('"hello"');
       expect(tokens[0].type).toBe(TokenType.String);
-      expect(tokens[0].literal).toBe("hello");
+      expect(tokens[0].literal.value).toBe("hello");
       expect(tokens[0].lexeme).toBe('"hello"');
     });
 
     it("should tokenize empty strings", () => {
       const tokens = tokenize('""');
       expect(tokens[0].type).toBe(TokenType.String);
-      expect(tokens[0].literal).toBe("");
+      expect(tokens[0].literal.value).toBe("");
     });
 
     it("should tokenize strings with spaces", () => {
       const tokens = tokenize('"hello world"');
-      expect(tokens[0].literal).toBe("hello world");
+      expect(tokens[0].literal.value).toBe("hello world");
     });
 
     it("should handle escape sequences in strings", () => {
       const tokens = tokenize('"hello\\nworld"');
       expect(tokens[0].type).toBe(TokenType.String);
-      expect(tokens[0].literal).toBe("hello\\nworld");
+      expect(tokens[0].literal.value).toBe("hello\\nworld");
     });
 
     it("should handle escaped quotes in strings", () => {
@@ -175,7 +175,7 @@ describe("Lexer", () => {
     it("should handle multiline strings and track line numbers", () => {
       const tokens = tokenize('"line1\nline2"');
       expect(tokens[0].type).toBe(TokenType.String);
-      expect(tokens[0].literal).toBe("line1\nline2");
+      expect(tokens[0].literal.value).toBe("line1\nline2");
     });
 
     it("should report unterminated strings", () => {
@@ -192,40 +192,40 @@ describe("Lexer", () => {
     it("should tokenize integers", () => {
       const tokens = tokenize("42");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(42);
+      expect(tokens[0].literal.value).toBe(42);
       expect(tokens[0].lexeme).toBe("42");
     });
 
     it("should tokenize floating point numbers", () => {
       const tokens = tokenize("3.14159");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(3.14159);
+      expect(tokens[0].literal.value).toBe(3.14159);
     });
 
     it("should tokenize numbers starting with zero", () => {
       const tokens = tokenize("0");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(0);
+      expect(tokens[0].literal.value).toBe(0);
     });
 
     it("should tokenize decimal starting with zero", () => {
       const tokens = tokenize("0.5");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(0.5);
+      expect(tokens[0].literal.value).toBe(0.5);
     });
 
     it("should not consume trailing dot without digit", () => {
       const tokens = tokenize("42.");
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(42);
+      expect(tokens[0].literal.value).toBe(42);
       expect(tokens[1].type).toBe(TokenType.Dot);
     });
 
     it("should tokenize multiple numbers", () => {
       const tokens = tokenize("1 2 3");
-      expect(tokens[0].literal).toBe(1);
-      expect(tokens[1].literal).toBe(2);
-      expect(tokens[2].literal).toBe(3);
+      expect(tokens[0].literal.value).toBe(1);
+      expect(tokens[1].literal.value).toBe(2);
+      expect(tokens[2].literal.value).toBe(3);
     });
   });
 
@@ -444,7 +444,7 @@ describe("Lexer", () => {
       const reporter = new ErrorReporter();
       const tokens = tokenize("@ 42", reporter);
       expect(tokens[0].type).toBe(TokenType.Number);
-      expect(tokens[0].literal).toBe(42);
+      expect(tokens[0].literal.value).toBe(42);
       expect(reporter.hasErrors()).toBe(true);
     });
   });

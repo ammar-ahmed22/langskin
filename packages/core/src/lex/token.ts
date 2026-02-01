@@ -1,3 +1,5 @@
+import { Literal } from "../runtime/literal";
+
 export enum TokenType {
   LeftParen,
   RightParen,
@@ -119,9 +121,7 @@ export class Token {
   constructor(
     public type: TokenType,
     public lexeme: string,
-    // TODO: Maybe this will be it's own object later
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public literal: any,
+    public literal: Literal,
     public line: number,
     public column: number,
   ) {}
