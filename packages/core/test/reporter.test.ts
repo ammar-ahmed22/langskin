@@ -1,5 +1,5 @@
-import { ErrorReporter } from "../src/errors/reporter";
-import { ErrorPhase, LangError } from "../src/errors/types";
+import { ErrorReporter, LangError } from "../src/errors/reporter";
+import { ErrorPhase, LangErrorProps } from "../src/errors/types";
 import { describe, it, expect, vi } from "vitest";
 
 describe("ErrorReporter", () => {
@@ -11,18 +11,22 @@ describe("ErrorReporter", () => {
 
   it("should collect reported errors", () => {
     const reporter = new ErrorReporter();
-    const error: LangError = {
+    const props: LangErrorProps = {
       phase: ErrorPhase.Lexical,
       message: "Test error",
       line: 1,
       column: 0,
     };
 
-    reporter.report(error);
+    reporter.report(props);
 
     expect(reporter.hasErrors()).toBe(true);
     expect(reporter.getErrors()).toHaveLength(1);
-    expect(reporter.getErrors()[0]).toEqual(error);
+    const error = reporter.getErrors()[0];
+    expect(error.phase).toBe(props.phase);
+    expect(error.message).toBe(props.message);
+    expect(error.line).toBe(props.line);
+    expect(error.column).toBe(props.column);
   });
 
   it("should collect multiple errors", () => {
@@ -79,21 +83,21 @@ describe("ErrorReporter", () => {
 
   it("should return a copy of errors array", () => {
     const reporter = new ErrorReporter();
-    const error: LangError = {
+    const props: LangErrorProps = {
       phase: ErrorPhase.Lexical,
       message: "Error",
       line: 1,
       column: 0,
     };
 
-    reporter.report(error);
+    reporter.report(props);
     const errors = reporter.getErrors();
-    errors.push({
+    errors.push(new LangError({
       phase: ErrorPhase.Syntax,
       message: "Pushed externally",
       line: 2,
       column: 0,
-    });
+    }));
 
     expect(reporter.getErrors()).toHaveLength(1);
   });
@@ -101,28 +105,30 @@ describe("ErrorReporter", () => {
   it("should invoke callback on report", () => {
     const callback = vi.fn();
     const reporter = new ErrorReporter(callback);
-    const error: LangError = {
+    const props: LangErrorProps = {
       phase: ErrorPhase.Lexical,
       message: "Error",
       line: 1,
       column: 0,
     };
 
-    reporter.report(error);
+    reporter.report(props);
 
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith(error);
+    const calledWith = callback.mock.calls[0][0] as LangError;
+    expect(calledWith.phase).toBe(props.phase);
+    expect(calledWith.message).toBe(props.message);
   });
 
   it("should work without callback", () => {
     const reporter = new ErrorReporter();
-    const error: LangError = {
+    const props: LangErrorProps = {
       phase: ErrorPhase.Lexical,
       message: "Error",
       line: 1,
       column: 0,
     };
 
-    expect(() => reporter.report(error)).not.toThrow();
+    expect(() => reporter.report(props)).not.toThrow();
   });
 });

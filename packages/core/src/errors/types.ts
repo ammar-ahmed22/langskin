@@ -4,7 +4,7 @@ export enum ErrorPhase {
   Runtime = "Runtime",
 }
 
-export interface LangError {
+export interface LangErrorProps {
   phase: ErrorPhase;
   message: string;
   line: number;

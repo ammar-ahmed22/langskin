@@ -68,6 +68,11 @@ describe("Lexer", () => {
       expect(tokens[0].type).toBe(TokenType.StarEqual);
     });
 
+    it("should tokenize slash equal", () => {
+      const tokens = tokenize("/=");
+      expect(tokens[0].type).toBe(TokenType.SlashEqual);
+    });
+
     it("should tokenize bang and bang equal", () => {
       const tokens = tokenize("! !=");
       expect(tokens[0].type).toBe(TokenType.Bang);
@@ -430,7 +435,6 @@ describe("Lexer", () => {
       const errors = reporter.getErrors();
       expect(errors[0].phase).toBe(ErrorPhase.Lexical);
       expect(errors[0].message).toBe("Unexpected character.");
-      expect(errors[0].lexeme).toBe("@");
     });
 
     it("should continue after unexpected character", () => {

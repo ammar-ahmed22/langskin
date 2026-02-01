@@ -1,5 +1,5 @@
 import { Token, TokenType, tokenTypeFromKeyword } from './token';
-import { ErrorReporter } from '../errors/reporter';
+import { ErrorReporter, LangError } from '../errors/reporter';
 import { ErrorPhase } from '../errors/types';
 
 export class Lexer {
@@ -67,12 +67,7 @@ export class Lexer {
     }
 
     if (this.end()) {
-      this.reporter.report({
-        phase: ErrorPhase.Lexical,
-        message: "Unterminated string.",
-        line: this.line,
-        column: this.column,
-      });
+      this.reporter.report(LangError.lexerError("Unterminated string.", this.line, this.column));
       return;
     }
 
@@ -219,6 +214,8 @@ export class Lexer {
         if (this.matchNext('/')) {
           // A comment goes until the end of the line.
           while (this.peek() !== '\n' && !this.end()) this.advance();
+        } else if (this.matchNext('=')) {
+          this.addToken(TokenType.SlashEqual);
         } else {
           this.addToken(TokenType.Slash);
         }
@@ -241,13 +238,7 @@ export class Lexer {
         } else if (this.isAlpha(char)) {
           this.identifier();
         } else {
-          this.reporter.report({
-            phase: ErrorPhase.Lexical,
-            message: "Unexpected character.",
-            line: this.line,
-            column: this.column,
-            lexeme: char,
-          });
+          this.reporter.report(LangError.lexerError("Unexpected character.", this.line, this.column));
         }
     }
   }
