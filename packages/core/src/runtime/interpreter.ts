@@ -11,9 +11,10 @@ import {
   StringLiteral,
 } from "./literal";
 import { Token, TokenType } from "../lex/token";
-import { LangError } from "../errors/reporter";
+import { LangError } from "../errors/error";
 import { LangClass } from "./callable/class";
 import { LangFunction, ReturnValue } from "./callable";
+import { Reporter } from "../reporter/reporter";
 
 export class Interpreter
   implements ExprVisitor<Literal>, StmtVisitor<void>
@@ -22,10 +23,12 @@ export class Interpreter
   public environment: Environment;
   // NOTE: Have to be careful here, getting values must be the same reference
   public locals: Map<Expr.Expression, number> = new Map();
+  private reporter: Reporter | undefined;
 
-  constructor() {
+  constructor(reporter?: Reporter) {
     this.globals = new Environment();
     this.environment = this.globals;
+    this.reporter = reporter;
   }
 
   public interpret(statements: Stmt.Statement[]): void {
@@ -548,9 +551,11 @@ export class Interpreter
 
   visitPrintStmt(stmt: Stmt.Print): void {
     const value = this.evaluate(stmt.expression);
-    // TODO: Change this to use the reporter system, not console.log
-    // When users use the library, they don't want to print to their console, they want use the output themselves
-    console.log(value.toString());
+    if (this.reporter) {
+      this.reporter.write(value.toString());
+    } else {
+      console.log(value.toString());
+    }
   }
 
   visitVarStmt(stmt: Stmt.Var): void {

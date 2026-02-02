@@ -1,6 +1,6 @@
 import { Callable, ReturnValue } from "./base";
 import { Stmt } from "../../ast";
-import { LangError } from "../../errors/reporter";
+import { LangError } from "../../errors/error";
 import { Token } from "../../lex/token";
 import { Environment } from "../environment";
 import { Interpreter } from "../interpreter";

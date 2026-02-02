@@ -1,5 +1,5 @@
 import { Expr, ExprVisitor, Stmt, StmtVisitor } from "../ast";
-import { LangError } from "../errors/reporter";
+import { LangError } from "../errors/error";
 import { Token } from "../lex/token";
 import { Interpreter } from "./interpreter";
 

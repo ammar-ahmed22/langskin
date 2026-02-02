@@ -1,5 +1,6 @@
 import { Token, TokenType, tokenTypeFromKeyword } from "./token";
-import { ErrorReporter, LangError } from "../errors/reporter";
+import { Reporter } from "../reporter/reporter";
+import { LangError } from "../errors/error";
 import { Literal } from "../runtime/literal";
 
 export class Lexer {
@@ -9,9 +10,9 @@ export class Lexer {
   private current: number = 0;
   private line: number = 1;
   private lineStart: number = 0; // Index where current line begins
-  private reporter: ErrorReporter;
+  private reporter: Reporter;
 
-  constructor(source: string, reporter: ErrorReporter) {
+  constructor(source: string, reporter: Reporter) {
     this.source = source;
     this.reporter = reporter;
   }

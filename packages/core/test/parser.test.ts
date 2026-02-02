@@ -1,5 +1,6 @@
 import { Lexer } from "../src/lex/lexer";
-import { ErrorReporter, LangError } from "../src/errors/reporter";
+import { Reporter } from "../src/reporter/reporter";
+import { LangError } from "../src/errors/error";
 import { ErrorPhase } from "../src/errors/types";
 import { Parser } from "../src/parse/parser";
 import { Expr, Stmt } from "../src/ast";
@@ -8,7 +9,7 @@ import { TokenType } from "../src/lex/token";
 import { NilLiteral } from "../src/runtime/literal";
 
 function parse(source: string): Stmt.Statement[] {
-  const reporter = new ErrorReporter();
+  const reporter = new Reporter();
   const tokens = new Lexer(source, reporter).scanTokens();
   const parser = new Parser(tokens);
   return parser.parse();

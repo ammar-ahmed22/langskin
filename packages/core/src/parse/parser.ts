@@ -1,5 +1,5 @@
 import { Expr, Stmt } from "../ast";
-import { LangError } from "../errors/reporter";
+import { LangError } from "../errors/error";
 import { Token, TokenType } from "../lex/token";
 import { Literal } from "../runtime/literal";
 

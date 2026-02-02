@@ -1,14 +1,11 @@
 import { Lexer } from "../src/lex/lexer";
 import { TokenType } from "../src/lex/token";
-import { ErrorReporter } from "../src/errors/reporter";
+import { Reporter } from "../src/reporter/reporter";
 import { ErrorPhase } from "../src/errors/types";
 import { describe, it, expect } from "vitest";
 
-function tokenize(source: string, reporter?: ErrorReporter) {
-  return new Lexer(
-    source,
-    reporter ?? new ErrorReporter(),
-  ).scanTokens();
+function tokenize(source: string, reporter?: Reporter) {
+  return new Lexer(source, reporter ?? new Reporter()).scanTokens();
 }
 
 describe("Lexer", () => {
@@ -179,7 +176,7 @@ describe("Lexer", () => {
     });
 
     it("should report unterminated strings", () => {
-      const reporter = new ErrorReporter();
+      const reporter = new Reporter();
       tokenize('"unterminated', reporter);
       expect(reporter.hasErrors()).toBe(true);
       const errors = reporter.getErrors();
@@ -432,7 +429,7 @@ describe("Lexer", () => {
     });
 
     it("should report unexpected characters", () => {
-      const reporter = new ErrorReporter();
+      const reporter = new Reporter();
       tokenize("@", reporter);
       expect(reporter.hasErrors()).toBe(true);
       const errors = reporter.getErrors();
@@ -441,7 +438,7 @@ describe("Lexer", () => {
     });
 
     it("should continue after unexpected character", () => {
-      const reporter = new ErrorReporter();
+      const reporter = new Reporter();
       const tokens = tokenize("@ 42", reporter);
       expect(tokens[0].type).toBe(TokenType.Number);
       expect(tokens[0].literal.value).toBe(42);

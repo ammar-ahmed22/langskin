@@ -1,54 +1,41 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { Lexer } from "../src/lex/lexer";
 import { Parser } from "../src/parse/parser";
 import { Resolver } from "../src/runtime/resolver";
 import { Interpreter } from "../src/runtime/interpreter";
-import { ErrorReporter, LangError } from "../src/errors/reporter";
+import { Reporter } from "../src/reporter/reporter";
+import { LangError } from "../src/errors/error";
 import { ErrorPhase } from "../src/errors/types";
 
 function run(source: string): string[] {
-  const output: string[] = [];
-  const reporter = new ErrorReporter();
+  const reporter = new Reporter();
 
   const tokens = new Lexer(source, reporter).scanTokens();
   const parser = new Parser(tokens);
   const statements = parser.parse();
 
-  const interpreter = new Interpreter();
+  const interpreter = new Interpreter(reporter);
   const resolver = new Resolver(interpreter);
   resolver.resolveStmts(statements);
 
-  const consoleSpy = vi
-    .spyOn(console, "log")
-    .mockImplementation((...args) => {
-      output.push(args.map(String).join(" "));
-    });
+  interpreter.interpret(statements);
 
-  try {
-    interpreter.interpret(statements);
-  } finally {
-    consoleSpy.mockRestore();
-  }
-
-  return output;
+  return reporter.getOutput();
 }
 
 function expectRuntimeError(
   source: string,
   expectedMessage?: string,
 ): LangError {
-  const reporter = new ErrorReporter();
+  const reporter = new Reporter();
   const tokens = new Lexer(source, reporter).scanTokens();
   const parser = new Parser(tokens);
   const statements = parser.parse();
 
-  const interpreter = new Interpreter();
+  const interpreter = new Interpreter(reporter);
   const resolver = new Resolver(interpreter);
   resolver.resolveStmts(statements);
 
-  const consoleSpy = vi
-    .spyOn(console, "log")
-    .mockImplementation(() => {});
   try {
     interpreter.interpret(statements);
     throw new Error(
@@ -62,8 +49,6 @@ function expectRuntimeError(
       expect(error.message).toBe(expectedMessage);
     }
     return error;
-  } finally {
-    consoleSpy.mockRestore();
   }
 }
 
@@ -71,12 +56,12 @@ function expectResolutionError(
   source: string,
   expectedMessage?: string,
 ): LangError {
-  const reporter = new ErrorReporter();
+  const reporter = new Reporter();
   const tokens = new Lexer(source, reporter).scanTokens();
   const parser = new Parser(tokens);
   const statements = parser.parse();
 
-  const interpreter = new Interpreter();
+  const interpreter = new Interpreter(reporter);
   const resolver = new Resolver(interpreter);
   try {
     resolver.resolveStmts(statements);

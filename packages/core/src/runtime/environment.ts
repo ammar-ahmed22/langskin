@@ -1,4 +1,4 @@
-import { LangError } from "../errors/reporter";
+import { LangError } from "../errors/error";
 import { Token } from "../lex/token";
 import { Literal } from "./literal";
 
