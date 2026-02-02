@@ -1,19 +1,19 @@
 import { Expr } from ".";
 
-export abstract class ExprVisitor<T> {
-  abstract visitAssignExpr(expr: Expr.Assign): T;
-  abstract visitBinaryExpr(expr: Expr.Binary): T;
-  abstract visitGroupingExpr(expr: Expr.Grouping): T;
-  abstract visitLiteralExpr(expr: Expr.Literal): T;
-  abstract visitUnaryExpr(expr: Expr.Unary): T;
-  abstract visitVariableExpr(expr: Expr.Variable): T;
-  abstract visitLogicalExpr(expr: Expr.Logical): T;
-  abstract visitCallExpr(expr: Expr.Call): T;
-  abstract visitGetExpr(expr: Expr.Get): T;
-  abstract visitSetExpr(expr: Expr.Set): T;
-  abstract visitThisExpr(expr: Expr.This): T;
-  abstract visitSetIndexedExpr(expr: Expr.SetIndexed): T;
-  abstract visitGetIndexedExpr(expr: Expr.GetIndexed): T;
-  abstract visitArrayExpr(expr: Expr.ArrayExpr): T;
-  abstract visitSuperExpr(expr: Expr.Super): T;
+export interface ExprVisitor<T> {
+  visitAssignExpr(expr: Expr.Assign): T;
+  visitBinaryExpr(expr: Expr.Binary): T;
+  visitGroupingExpr(expr: Expr.Grouping): T;
+  visitLiteralExpr(expr: Expr.LiteralExpr): T;
+  visitUnaryExpr(expr: Expr.Unary): T;
+  visitVariableExpr(expr: Expr.Variable): T;
+  visitLogicalExpr(expr: Expr.Logical): T;
+  visitCallExpr(expr: Expr.Call): T;
+  visitGetExpr(expr: Expr.Get): T;
+  visitSetExpr(expr: Expr.Set): T;
+  visitThisExpr(expr: Expr.This): T;
+  visitSetIndexedExpr(expr: Expr.SetIndexed): T;
+  visitGetIndexedExpr(expr: Expr.GetIndexed): T;
+  visitArrayExpr(expr: Expr.ArrayExpr): T;
+  visitSuperExpr(expr: Expr.Super): T;
 }

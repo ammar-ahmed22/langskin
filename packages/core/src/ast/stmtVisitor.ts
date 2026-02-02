@@ -1,13 +1,13 @@
 import { Stmt } from ".";
 
-export abstract class StmtVisitor<T> {
-  abstract visitExpressionStmt(stmt: Stmt.Expression): T;
-  abstract visitPrintStmt(stmt: Stmt.Print): T;
-  abstract visitVarStmt(stmt: Stmt.Var): T;
-  abstract visitBlockStmt(stmt: Stmt.Block): T;
-  abstract visitIfStmt(stmt: Stmt.If): T;
-  abstract visitWhileStmt(stmt: Stmt.While): T;
-  abstract visitFunctionStmt(stmt: Stmt.FunctionStmt): T;
-  abstract visitReturnStmt(stmt: Stmt.Return): T;
-  abstract visitClassStmt(stmt: Stmt.Class): T;
+export interface StmtVisitor<T> {
+  visitExpressionStmt(stmt: Stmt.Expression): T;
+  visitPrintStmt(stmt: Stmt.Print): T;
+  visitVarStmt(stmt: Stmt.Var): T;
+  visitBlockStmt(stmt: Stmt.Block): T;
+  visitIfStmt(stmt: Stmt.If): T;
+  visitWhileStmt(stmt: Stmt.While): T;
+  visitFunctionStmt(stmt: Stmt.FunctionStmt): T;
+  visitReturnStmt(stmt: Stmt.Return): T;
+  visitClassStmt(stmt: Stmt.Class): T;
 }
