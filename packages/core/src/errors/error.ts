@@ -24,6 +24,14 @@ export class LangError extends Error {
     this.lexeme = lexeme;
   }
 
+  public format(): string {
+    let location = `line ${this.line}, column ${this.column}`;
+    if (this.lexeme) {
+      location += ` (at '${this.lexeme}')`;
+    }
+    return `[${ErrorPhase[this.phase]} Error] ${location}: ${this.message}`;
+  }
+
   static lexerError(
     message: string,
     line: number,

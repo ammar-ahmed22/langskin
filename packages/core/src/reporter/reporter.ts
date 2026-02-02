@@ -77,6 +77,10 @@ export class Reporter {
     return this.hasErrors();
   }
 
+  formattedErrors(): string[] {
+    return this.errors.map((e) => e.format());
+  }
+
   // Clear all
   clear(): void {
     this.clearErrors();

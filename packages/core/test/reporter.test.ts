@@ -224,4 +224,83 @@ describe("Reporter", () => {
       expect(reporter.getOutput()).toEqual([]);
     });
   });
+
+  describe("formattedErrors", () => {
+    it("should return empty array when no errors", () => {
+      const reporter = new Reporter();
+      expect(reporter.formattedErrors()).toEqual([]);
+    });
+
+    it("should return formatted error strings", () => {
+      const reporter = new Reporter();
+      reporter.report({
+        phase: ErrorPhase.Lexical,
+        message: "Unterminated string.",
+        line: 1,
+        column: 5,
+      });
+      reporter.report({
+        phase: ErrorPhase.Syntax,
+        message: "Expect ';' after value.",
+        line: 2,
+        column: 10,
+        lexeme: "print",
+      });
+
+      const formatted = reporter.formattedErrors();
+
+      expect(formatted).toHaveLength(2);
+      expect(formatted[0]).toBe(
+        "[Lexical Error] line 1, column 5: Unterminated string.",
+      );
+      expect(formatted[1]).toBe(
+        "[Syntax Error] line 2, column 10 (at 'print'): Expect ';' after value.",
+      );
+    });
+  });
+});
+
+describe("LangError", () => {
+  describe("format", () => {
+    it("should format error without lexeme", () => {
+      const error = new LangError({
+        phase: ErrorPhase.Lexical,
+        message: "Unterminated string.",
+        line: 1,
+        column: 5,
+      });
+
+      expect(error.format()).toBe(
+        "[Lexical Error] line 1, column 5: Unterminated string.",
+      );
+    });
+
+    it("should format error with lexeme", () => {
+      const error = new LangError({
+        phase: ErrorPhase.Syntax,
+        message: "Expect ';' after value.",
+        line: 2,
+        column: 10,
+        lexeme: "print",
+      });
+
+      expect(error.format()).toBe(
+        "[Syntax Error] line 2, column 10 (at 'print'): Expect ';' after value.",
+      );
+    });
+
+    it("should format runtime error", () => {
+      const error = new LangError({
+        phase: ErrorPhase.Runtime,
+        message: "Division by zero.",
+        line: 5,
+        column: 8,
+        lexeme: "/",
+      });
+
+      expect(error.format()).toBe(
+        "[Runtime Error] line 5, column 8 (at '/'): Division by zero.",
+      );
+    });
+  });
 });
