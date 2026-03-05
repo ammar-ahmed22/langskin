@@ -1,6 +1,21 @@
 {
   "name": "langskin",
-  "version": "0.1.0",
+  "version": "0.0.4",
+  "description": "Create your own programming language syntax",
+  "license": "MIT",
+  "homepage": "https://github.com/ammar-ahmed22/langskin/tree/main/packages/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ammar-ahmed22/langskin.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "language",
+    "syntax",
+    "parser",
+    "compiler",
+    "dsl"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
