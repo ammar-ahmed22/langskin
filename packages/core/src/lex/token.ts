@@ -1,4 +1,5 @@
 import { Literal } from "../runtime/literal";
+import { LangskinSpec } from "../spec/types";
 
 export enum TokenType {
   LeftParen,
@@ -61,60 +62,48 @@ export enum TokenType {
   Eof,
 }
 
+/**
+ * Builds a reverse lookup map from keyword string to TokenType based on the spec.
+ */
+export function buildKeywordMap(
+  spec: LangskinSpec,
+): Map<string, TokenType> {
+  const map = new Map<string, TokenType>();
+  const { keywords } = spec;
+
+  map.set(keywords.and, TokenType.And);
+  map.set(keywords.or, TokenType.Or);
+  map.set(keywords.not, TokenType.Bang);
+  map.set(keywords.if, TokenType.If);
+  map.set(keywords.else, TokenType.Else);
+  map.set(keywords.elif, TokenType.ElseIf);
+  map.set(keywords.for, TokenType.For);
+  map.set(keywords.while, TokenType.While);
+  map.set(keywords.break, TokenType.Break);
+  map.set(keywords.continue, TokenType.Continue);
+  map.set(keywords.fun, TokenType.Fun);
+  map.set(keywords.return, TokenType.Return);
+  map.set(keywords.class, TokenType.Class);
+  map.set(keywords.inherits, TokenType.Inherits);
+  map.set(keywords.super, TokenType.Super);
+  map.set(keywords.this, TokenType.This);
+  map.set(keywords.var, TokenType.Var);
+  map.set(keywords.true, TokenType.True);
+  map.set(keywords.false, TokenType.False);
+  map.set(keywords.nil, TokenType.Nil);
+  map.set(keywords.print, TokenType.Print);
+
+  return map;
+}
+
+/**
+ * Returns the TokenType for a keyword string, or null if not a keyword.
+ */
 export function tokenTypeFromKeyword(
   keyword: string,
-  // TODO: Define a proper spec type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _spec: any,
+  keywordMap: Map<string, TokenType>,
 ): TokenType | null {
-  // TODO: This should be based on the passed in spec afterwords
-  // i.e. users can define their own keywords
-  switch (keyword) {
-    case "and":
-      return TokenType.And;
-    case "class":
-      return TokenType.Class;
-    case "if":
-      return TokenType.If;
-    case "else":
-      return TokenType.Else;
-    case "elif":
-      return TokenType.ElseIf;
-    case "false":
-      return TokenType.False;
-    case "for":
-      return TokenType.For;
-    case "fun":
-      return TokenType.Fun;
-    case "nil":
-      return TokenType.Nil;
-    case "or":
-      return TokenType.Or;
-    case "print":
-      return TokenType.Print;
-    case "return":
-      return TokenType.Return;
-    case "super":
-      return TokenType.Super;
-    case "this":
-      return TokenType.This;
-    case "true":
-      return TokenType.True;
-    case "let":
-      return TokenType.Var;
-    case "while":
-      return TokenType.While;
-    case "break":
-      return TokenType.Break;
-    case "continue":
-      return TokenType.Continue;
-    case "inherits":
-      return TokenType.Inherits;
-    case "not":
-      return TokenType.Bang;
-    default:
-      return null;
-  }
+  return keywordMap.get(keyword) ?? null;
 }
 
 export class Token {

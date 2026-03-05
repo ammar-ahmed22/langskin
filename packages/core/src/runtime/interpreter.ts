@@ -20,6 +20,8 @@ import {
   ContinueException,
 } from "./callable";
 import { Reporter } from "../reporter/reporter";
+import { LangskinSpec } from "../spec/types";
+import { DEFAULT_SPEC } from "../spec/defaultSpec";
 
 export class Interpreter
   implements ExprVisitor<Literal>, StmtVisitor<void>
@@ -29,11 +31,16 @@ export class Interpreter
   // NOTE: Have to be careful here, getting values must be the same reference
   public locals: Map<Expr.Expression, number> = new Map();
   private reporter: Reporter | undefined;
+  private spec: LangskinSpec;
 
-  constructor(reporter?: Reporter) {
+  constructor(
+    reporter?: Reporter,
+    spec: LangskinSpec = DEFAULT_SPEC,
+  ) {
     this.globals = new Environment();
     this.environment = this.globals;
     this.reporter = reporter;
+    this.spec = spec;
   }
 
   public interpret(statements: Stmt.Statement[]): void {
@@ -420,46 +427,42 @@ export class Interpreter
   }
 
   visitSuperExpr(expr: Expr.Super): Literal {
+    const kw = this.spec.keywords;
     const distance = this.locals.get(expr);
     if (!distance) {
-      // TODO: Spec should be used here to interpolate the user's keyword for "super"
       throw LangError.runtimeError(
-        "Undefined 'super' reference.",
+        `Undefined '${kw.super}' reference.`,
         expr.keyword,
       );
     }
     let superclass;
-    // TODO: Spec should be used here to interpolate the user's keyword for "super"
     if (
-      this.environment.getAt(distance, "super") instanceof
+      this.environment.getAt(distance, kw.super) instanceof
       CallableLiteral
     ) {
       superclass = this.environment.getAt(
         distance,
-        "super",
+        kw.super,
       ) as CallableLiteral;
     } else {
-      // TODO: Spec should be used here to interpolate the user's keyword for "super"
       throw LangError.runtimeError(
-        "Undefined 'super' reference.",
+        `Undefined '${kw.super}' reference.`,
         expr.keyword,
       );
     }
 
     let object;
-    // TODO: Spec should be used here to interpolate the user's keyword for "this"
     if (
-      this.environment.getAt(distance - 1, "this") instanceof
+      this.environment.getAt(distance - 1, kw.this) instanceof
       InstanceLiteral
     ) {
       object = this.environment.getAt(
         distance - 1,
-        "this",
+        kw.this,
       ) as InstanceLiteral;
     } else {
-      // TODO: Spec should be used here to interpolate the user's keyword for "this"
       throw LangError.runtimeError(
-        "Undefined 'this' reference.",
+        `Undefined '${kw.this}' reference.`,
         expr.keyword,
       );
     }
@@ -479,7 +482,9 @@ export class Interpreter
         expr.method,
       );
     }
-    return Literal.callable(actualMethod.bindInstance(object.value));
+    return Literal.callable(
+      actualMethod.bindInstance(object.value, this.spec),
+    );
   }
 
   visitGetIndexedExpr(expr: Expr.GetIndexed): Literal {
@@ -642,7 +647,12 @@ export class Interpreter
   }
 
   visitFunctionStmt(stmt: Stmt.FunctionStmt): void {
-    const func = new LangFunction(stmt, this.environment, false);
+    const func = new LangFunction(
+      stmt,
+      this.environment,
+      false,
+      this.spec,
+    );
     this.environment.define(stmt.name.lexeme, Literal.callable(func));
   }
 
@@ -655,6 +665,7 @@ export class Interpreter
   }
 
   visitClassStmt(stmt: Stmt.Class): void {
+    const kw = this.spec.keywords;
     let superclass = null;
     if (stmt.superclass) {
       const superclassLiteral = this.evaluate(stmt.superclass);
@@ -662,9 +673,8 @@ export class Interpreter
         !(superclassLiteral instanceof CallableLiteral) ||
         !(superclassLiteral.value instanceof LangClass)
       ) {
-        // TODO: Spec should be used here to interpolate the user's keyword for "super" and "class" is
         throw LangError.runtimeError(
-          "Superclass must be a class.",
+          `'${kw.inherits}' target must be a '${kw.class}'.`,
           stmt.name,
         );
       }
@@ -674,17 +684,16 @@ export class Interpreter
     this.environment.define(stmt.name.lexeme, Literal.nil());
     if (superclass) {
       this.environment = new Environment(this.environment);
-      // TODO: Spec should be used here to interpolate the user's keyword for "super"
-      this.environment.define("super", Literal.callable(superclass));
+      this.environment.define(kw.super, Literal.callable(superclass));
     }
     const methods: Map<string, LangFunction> = new Map();
     for (const method of stmt.methods) {
       if (method instanceof Stmt.FunctionStmt) {
-        // TODO: Spec should be used here to interpolate the user's keyword for "init"
         const func = new LangFunction(
           method,
           this.environment,
-          method.name.lexeme === "init",
+          method.name.lexeme === kw.init,
+          this.spec,
         );
         methods.set(method.name.lexeme, func);
       } else {
@@ -699,6 +708,7 @@ export class Interpreter
       stmt.name.lexeme,
       methods,
       superclass || undefined,
+      this.spec,
     );
     if (superclass) {
       this.environment = this.environment.enclosing!;

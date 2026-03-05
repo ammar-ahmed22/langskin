@@ -493,7 +493,10 @@ describe("Parser", () => {
     });
 
     it("should error on missing ( after if", () => {
-      expectSyntaxError("if true) print 1;", "Expect '(' after 'if'");
+      expectSyntaxError(
+        "if true) print 1;",
+        "Expect '(' after 'if'.",
+      );
     });
 
     it("should error on missing ) after if condition", () => {
@@ -522,7 +525,7 @@ describe("Parser", () => {
     it("should error on missing ( after while", () => {
       expectSyntaxError(
         "while true) print 1;",
-        "Expect '(' after 'while'",
+        "Expect '(' after 'while'.",
       );
     });
   });
@@ -578,7 +581,7 @@ describe("Parser", () => {
     it("should error on missing ( after for", () => {
       expectSyntaxError(
         "for let i = 0; i < 10; i++) print i;",
-        "Expect '(' after 'for'",
+        "Expect '(' after 'for'.",
       );
     });
   });
@@ -669,7 +672,7 @@ describe("Parser", () => {
     it("should error on missing semicolon after return", () => {
       expectSyntaxError(
         "return 42",
-        "Expect ';' after 'return' value",
+        "Expect ';' after 'return' value.",
       );
     });
   });
@@ -702,7 +705,7 @@ describe("Parser", () => {
     });
 
     it("should error on missing class name", () => {
-      expectSyntaxError("class {}", "Expect 'class' name");
+      expectSyntaxError("class {}", "Expect 'class' name.");
     });
 
     it("should error on missing { before class body", () => {
@@ -734,7 +737,7 @@ describe("Parser", () => {
     });
 
     it("should error on super without dot", () => {
-      expectSyntaxError("super;", "Expect '.' after 'super'");
+      expectSyntaxError("super;", "Expect '.' after 'super'.");
     });
   });
 

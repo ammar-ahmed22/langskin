@@ -6,24 +6,30 @@ import { Environment } from "../environment";
 import { Interpreter } from "../interpreter";
 import { Literal } from "../literal";
 import { LangInstance } from "./instance";
+import { LangskinSpec } from "../../spec/types";
+import { DEFAULT_SPEC } from "../../spec/defaultSpec";
 
 export class LangFunction extends Callable {
   constructor(
     public declaration: Stmt.Statement,
     public closure: Environment,
     public isInitializer: boolean,
+    public spec: LangskinSpec = DEFAULT_SPEC,
   ) {
     super();
   }
 
-  public bindInstance(instance: LangInstance): LangFunction {
+  public bindInstance(
+    instance: LangInstance,
+    spec: LangskinSpec = this.spec,
+  ): LangFunction {
     const env = new Environment(this.closure);
-    // TODO: Spec should be used here to interpolate the user's keyword for "this"
-    env.define("this", Literal.instance(instance));
+    env.define(spec.keywords.this, Literal.instance(instance));
     return new LangFunction(
       this.declaration,
       env,
       this.isInitializer,
+      spec,
     );
   }
 
@@ -44,8 +50,7 @@ export class LangFunction extends Callable {
       } catch (returnValue: unknown) {
         if (returnValue instanceof ReturnException) {
           if (this.isInitializer) {
-            // TODO: Spec should be used here to interpolate the user's keyword for "this"
-            return this.closure.getAt(0, "this");
+            return this.closure.getAt(0, this.spec.keywords.this);
           }
           return returnValue.value;
         } else {
@@ -54,8 +59,7 @@ export class LangFunction extends Callable {
       }
 
       if (this.isInitializer) {
-        // TODO: Spec should be used here to interpolate the user's keyword for "this"
-        return this.closure.getAt(0, "this");
+        return this.closure.getAt(0, this.spec.keywords.this);
       }
       // If no return statement is encountered, return nil
       return Literal.nil();

@@ -1,7 +1,14 @@
-import { Token, TokenType, tokenTypeFromKeyword } from "./token";
+import {
+  Token,
+  TokenType,
+  tokenTypeFromKeyword,
+  buildKeywordMap,
+} from "./token";
 import { Reporter } from "../reporter/reporter";
 import { LangError } from "../errors/error";
 import { Literal } from "../runtime/literal";
+import { LangskinSpec } from "../spec/types";
+import { DEFAULT_SPEC } from "../spec/defaultSpec";
 
 export class Lexer {
   private source: string;
@@ -11,10 +18,16 @@ export class Lexer {
   private line: number = 1;
   private lineStart: number = 0; // Index where current line begins
   private reporter: Reporter;
+  private keywordMap: Map<string, TokenType>;
 
-  constructor(source: string, reporter: Reporter) {
+  constructor(
+    source: string,
+    reporter: Reporter,
+    spec: LangskinSpec = DEFAULT_SPEC,
+  ) {
     this.source = source;
     this.reporter = reporter;
+    this.keywordMap = buildKeywordMap(spec);
   }
 
   // Returns the column (0-indexed) of the token's start position
@@ -147,8 +160,7 @@ export class Lexer {
     }
 
     const text = this.source.substring(this.start, this.current);
-    // TODO: Add spec here
-    const type = tokenTypeFromKeyword(text, {});
+    const type = tokenTypeFromKeyword(text, this.keywordMap);
     if (type === null) {
       this.addToken(TokenType.Identifier);
     } else {

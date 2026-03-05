@@ -2,6 +2,8 @@ import { Expr, ExprVisitor, Stmt, StmtVisitor } from "../ast";
 import { LangError } from "../errors/error";
 import { Token } from "../lex/token";
 import { Interpreter } from "./interpreter";
+import { LangskinSpec } from "../spec/types";
+import { DEFAULT_SPEC } from "../spec/defaultSpec";
 
 enum FunctionType {
   Function,
@@ -23,9 +25,14 @@ export class Resolver
   private currentFunction: FunctionType | undefined;
   private currentClass: ClassType | undefined;
   private loopDepth: number = 0;
+  private spec: LangskinSpec;
 
-  constructor(interpreter: Interpreter) {
+  constructor(
+    interpreter: Interpreter,
+    spec: LangskinSpec = DEFAULT_SPEC,
+  ) {
     this.interpreter = interpreter;
+    this.spec = spec;
   }
 
   private beginScope() {
@@ -166,7 +173,7 @@ export class Resolver
   visitBreakStmt(stmt: Stmt.Break): void {
     if (this.loopDepth === 0) {
       throw LangError.runtimeError(
-        "Cannot use 'break' outside of a loop.",
+        `Cannot use '${this.spec.keywords.break}' outside of a loop.`,
         stmt.keyword,
       );
     }
@@ -175,7 +182,7 @@ export class Resolver
   visitContinueStmt(stmt: Stmt.Continue): void {
     if (this.loopDepth === 0) {
       throw LangError.runtimeError(
-        "Cannot use 'continue' outside of a loop.",
+        `Cannot use '${this.spec.keywords.continue}' outside of a loop.`,
         stmt.keyword,
       );
     }
@@ -199,6 +206,7 @@ export class Resolver
   }
 
   visitClassStmt(stmt: Stmt.Class): void {
+    const kw = this.spec.keywords;
     const enclosingClass = this.currentClass;
     this.currentClass = ClassType.Class;
     this.declare(stmt.name);
@@ -206,7 +214,7 @@ export class Resolver
     if (stmt.superclass) {
       if (!(stmt.superclass instanceof Expr.Variable)) {
         throw LangError.runtimeError(
-          "Superclass must be a class name.",
+          `'${kw.inherits}' target must be a '${kw.class}' name.`,
           stmt.name,
         );
       }
@@ -219,22 +227,20 @@ export class Resolver
       this.currentClass = ClassType.Subclass;
       this.resolveExpr(stmt.superclass);
       this.beginScope();
-      // TODO: Spec should be used here to interpolate the user's keyword for "super"
-      this.scopes[this.scopes.length - 1]!.set("super", true);
+      this.scopes[this.scopes.length - 1]!.set(kw.super, true);
     }
 
     this.beginScope();
-    this.scopes[this.scopes.length - 1]!.set("this", true);
+    this.scopes[this.scopes.length - 1]!.set(kw.this, true);
     for (const method of stmt.methods) {
       let declaration = FunctionType.Method;
       if (!(method instanceof Stmt.FunctionStmt)) {
-        // TODO: Spec should be used here to interpolate the user's keyword for "function"
         throw LangError.runtimeError(
-          "Method must be a function declaration.",
+          `Method must be a '${kw.fun}' declaration.`,
           stmt.name,
         );
       }
-      if (method.name.lexeme === "init") {
+      if (method.name.lexeme === kw.init) {
         declaration = FunctionType.Initializer;
       }
       this.resolveFunction(method, declaration);
@@ -310,9 +316,8 @@ export class Resolver
 
   visitThisExpr(expr: Expr.This): void {
     if (this.currentClass === undefined) {
-      // TODO: Spec should be used here to interpolate the user's keyword for "this"
       throw LangError.runtimeError(
-        "Cannot use 'this' outside of a class.",
+        `Cannot use '${this.spec.keywords.this}' outside of a class.`,
         expr.keyword,
       );
     }
@@ -320,18 +325,17 @@ export class Resolver
   }
 
   visitSuperExpr(expr: Expr.Super): void {
+    const kw = this.spec.keywords;
     if (this.currentClass === undefined) {
-      // TODO: Spec should be used here to interpolate the user's keyword for "super"
       throw LangError.runtimeError(
-        "Cannot use 'super' outside of a class.",
+        `Cannot use '${kw.super}' outside of a class.`,
         expr.keyword,
       );
     }
 
     if (this.currentClass !== ClassType.Subclass) {
-      // TODO: Spec should be used here to interpolate the user's keyword for "super"
       throw LangError.runtimeError(
-        "Cannot use 'super' in a class with no superclass.",
+        `Cannot use '${kw.super}' in a class with no superclass.`,
         expr.keyword,
       );
     }

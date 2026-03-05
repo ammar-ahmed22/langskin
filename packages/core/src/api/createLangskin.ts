@@ -4,21 +4,21 @@ import { Parser } from "../parse/parser";
 import { Reporter } from "../reporter/reporter";
 import { Interpreter } from "../runtime/interpreter";
 import { Resolver } from "../runtime/resolver";
+import { LangskinSpec, PartialLangskinSpec } from "../spec/types";
+import { createSpec } from "./createSpec";
 
 class Langskin {
-  // TODO: Define a proper spec type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(public spec: any) {}
+  constructor(public spec: LangskinSpec) {}
 
   public run(source: string): Reporter {
     const reporter = new Reporter();
-    const lexer = new Lexer(source, reporter);
+    const lexer = new Lexer(source, reporter, this.spec);
     const tokens = lexer.scanTokens();
-    const parser = new Parser(tokens);
+    const parser = new Parser(tokens, this.spec);
     try {
       const statements = parser.parse();
-      const interpreter = new Interpreter(reporter);
-      const resolver = new Resolver(interpreter);
+      const interpreter = new Interpreter(reporter, this.spec);
+      const resolver = new Resolver(interpreter, this.spec);
       try {
         resolver.resolveStmts(statements);
         try {
@@ -48,8 +48,16 @@ class Langskin {
   }
 }
 
-// TODO: Define a proper spec type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createLangskin(spec: any) {
+/**
+ * Creates a new Langskin interpreter instance with the given spec.
+ * If no spec is provided, uses the default keywords.
+ *
+ * @param partialSpec - Optional partial spec to customize keywords
+ * @returns A Langskin instance
+ */
+export function createLangskin(
+  partialSpec?: PartialLangskinSpec,
+): Langskin {
+  const spec = createSpec(partialSpec);
   return new Langskin(spec);
 }

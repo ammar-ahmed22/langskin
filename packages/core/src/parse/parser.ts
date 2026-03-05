@@ -2,13 +2,17 @@ import { Expr, Stmt } from "../ast";
 import { LangError } from "../errors/error";
 import { Token, TokenType } from "../lex/token";
 import { Literal } from "../runtime/literal";
+import { LangskinSpec } from "../spec/types";
+import { DEFAULT_SPEC } from "../spec/defaultSpec";
 
 export class Parser {
   private tokens: Token[];
   private current: number = 0;
+  private spec: LangskinSpec;
 
-  constructor(tokens: Token[]) {
+  constructor(tokens: Token[], spec: LangskinSpec = DEFAULT_SPEC) {
     this.tokens = tokens;
+    this.spec = spec;
   }
 
   public parse(): Stmt.Statement[] {
@@ -103,7 +107,6 @@ export class Parser {
   }
 
   private functionDeclaration(kind: string): Stmt.Statement {
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'function/method' is
     const name = this.consume(
       TokenType.Identifier,
       `Expect ${kind} name.`,
@@ -144,26 +147,24 @@ export class Parser {
   }
 
   private classDeclaration(): Stmt.Statement {
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'class' is
+    const kw = this.spec.keywords;
     const name = this.consume(
       TokenType.Identifier,
-      "Expect 'class' name",
+      `Expect '${kw.class}' name.`,
     );
 
     let superclass = null;
     if (this.matchTypes(TokenType.Inherits)) {
-      // TODO: Spec should be used here to interpolate what the user's keyword for 'class' is
       this.consume(
         TokenType.Identifier,
-        "Expect parent 'class' name",
+        `Expect parent '${kw.class}' name.`,
       );
       superclass = new Expr.Variable(this.previous());
     }
 
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'class' is
     this.consume(
       TokenType.LeftBrace,
-      "Expect '{' before 'class' body.",
+      `Expect '{' before '${kw.class}' body.`,
     );
 
     const methods: Stmt.Statement[] = [];
@@ -171,10 +172,9 @@ export class Parser {
       methods.push(this.functionDeclaration("method"));
     }
 
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'class' is
     this.consume(
       TokenType.RightBrace,
-      "Expect '}' after 'class' body.",
+      `Expect '}' after '${kw.class}' body.`,
     );
 
     return new Stmt.Class(name, methods, superclass);
@@ -218,13 +218,15 @@ export class Parser {
   }
 
   private whileStatement(): Stmt.Statement {
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'while' is
-    this.consume(TokenType.LeftParen, "Expect '(' after 'while'");
+    const kw = this.spec.keywords;
+    this.consume(
+      TokenType.LeftParen,
+      `Expect '(' after '${kw.while}'.`,
+    );
     const condition = this.expression();
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'while' is
     this.consume(
       TokenType.RightParen,
-      "Expect ')' after 'while' condition.",
+      `Expect ')' after '${kw.while}' condition.`,
     );
     const body = this.statement();
     return new Stmt.While(condition, body);
@@ -232,13 +234,19 @@ export class Parser {
 
   private breakStatement(): Stmt.Statement {
     const keyword = this.previous();
-    this.consume(TokenType.Semicolon, "Expect ';' after 'break'.");
+    this.consume(
+      TokenType.Semicolon,
+      `Expect ';' after '${this.spec.keywords.break}'.`,
+    );
     return new Stmt.Break(keyword);
   }
 
   private continueStatement(): Stmt.Statement {
     const keyword = this.previous();
-    this.consume(TokenType.Semicolon, "Expect ';' after 'continue'.");
+    this.consume(
+      TokenType.Semicolon,
+      `Expect ';' after '${this.spec.keywords.continue}'.`,
+    );
     return new Stmt.Continue(keyword);
   }
 
@@ -249,10 +257,9 @@ export class Parser {
       value = this.expression();
     }
 
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'return' is
     this.consume(
       TokenType.Semicolon,
-      "Expect ';' after 'return' value",
+      `Expect ';' after '${this.spec.keywords.return}' value.`,
     );
 
     return new Stmt.Return(keyword, value);
@@ -265,14 +272,13 @@ export class Parser {
   }
 
   private ifStatement(): Stmt.Statement {
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'if' is
-    this.consume(TokenType.LeftParen, "Expect '(' after 'if'");
+    const kw = this.spec.keywords;
+    this.consume(TokenType.LeftParen, `Expect '(' after '${kw.if}'.`);
 
     const condition = this.expression();
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'if' is
     this.consume(
       TokenType.RightParen,
-      "Expect ')' after 'if' condition.",
+      `Expect ')' after '${kw.if}' condition.`,
     );
     const then = this.statement();
     let elseBranch = null;
@@ -286,8 +292,11 @@ export class Parser {
   }
 
   private forStatement(): Stmt.Statement {
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'for' is
-    this.consume(TokenType.LeftParen, "Expect '(' after 'for'");
+    const kw = this.spec.keywords;
+    this.consume(
+      TokenType.LeftParen,
+      `Expect '(' after '${kw.for}'.`,
+    );
     let initializer: Stmt.Statement | null;
     if (this.matchTypes(TokenType.Semicolon)) {
       initializer = null;
@@ -302,20 +311,18 @@ export class Parser {
       condition = this.expression();
     }
 
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'for' is
     this.consume(
       TokenType.Semicolon,
-      "Expect ';' after 'for' condition.",
+      `Expect ';' after '${kw.for}' condition.`,
     );
     let increment = null;
     if (!this.check(TokenType.RightParen)) {
       increment = this.expression();
     }
 
-    // TODO: Spec should be used here to interpolate what the user's keyword for 'for' is
     this.consume(
       TokenType.RightParen,
-      "Expect ')' after 'for' clauses.",
+      `Expect ')' after '${kw.for}' clauses.`,
     );
 
     const body = this.statement();
@@ -689,12 +696,11 @@ export class Parser {
 
     if (this.matchTypes(TokenType.Super)) {
       const keyword = this.previous();
-      // TODO: Spec should be used here to interpolate what the user's keyword for super is
-      this.consume(TokenType.Dot, "Expect '.' after 'super'");
-      // TODO: Spec should be used here to interpolate what the user's keyword for super and class is
+      const kw = this.spec.keywords;
+      this.consume(TokenType.Dot, `Expect '.' after '${kw.super}'.`);
       const method = this.consume(
         TokenType.Identifier,
-        "Expect super class method name",
+        `Expect '${kw.super}' '${kw.class}' method name.`,
       );
       return new Expr.Super(keyword, method);
     }

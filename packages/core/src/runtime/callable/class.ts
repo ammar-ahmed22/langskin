@@ -4,12 +4,15 @@ import { Interpreter } from "../interpreter";
 import { Literal } from "../literal";
 import { LangFunction } from "./function";
 import { LangInstance } from "./instance";
+import { LangskinSpec } from "../../spec/types";
+import { DEFAULT_SPEC } from "../../spec/defaultSpec";
 
 export class LangClass extends Callable {
   constructor(
     public name: string,
     public methods: Map<string, LangFunction>,
     public superclass: LangClass | undefined,
+    public spec: LangskinSpec = DEFAULT_SPEC,
   ) {
     super();
   }
@@ -32,19 +35,17 @@ export class LangClass extends Callable {
     paren: Token,
   ): Literal {
     const instance = new LangInstance(this);
-    // TODO : Spec should be used here to interpolate the user's keyword for "init"
-    const initializer = this.findMethod("init");
+    const initializer = this.findMethod(this.spec.keywords.init);
     if (initializer) {
       initializer
-        .bindInstance(instance)
+        .bindInstance(instance, this.spec)
         .call(interpreter, args, paren);
     }
     return Literal.instance(instance);
   }
 
   arity(): number {
-    // TODO: Spec should be used here to interpolate the user's keyword for "init"
-    const initializer = this.findMethod("init");
+    const initializer = this.findMethod(this.spec.keywords.init);
     if (initializer) {
       return initializer.arity();
     }
