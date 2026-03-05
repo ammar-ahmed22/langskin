@@ -116,3 +116,38 @@ export class Class extends Statement {
     return visitor.visitClassStmt(this);
   }
 }
+
+export class Break extends Statement {
+  constructor(public keyword: Token) {
+    super();
+  }
+
+  accept<T>(visitor: StmtVisitor<T>): T {
+    return visitor.visitBreakStmt(this);
+  }
+}
+
+export class Continue extends Statement {
+  constructor(public keyword: Token) {
+    super();
+  }
+
+  accept<T>(visitor: StmtVisitor<T>): T {
+    return visitor.visitContinueStmt(this);
+  }
+}
+
+export class For extends Statement {
+  constructor(
+    public initializer: Statement | null,
+    public condition: Expr.Expression | null,
+    public increment: Expr.Expression | null,
+    public body: Statement,
+  ) {
+    super();
+  }
+
+  accept<T>(visitor: StmtVisitor<T>): T {
+    return visitor.visitForStmt(this);
+  }
+}

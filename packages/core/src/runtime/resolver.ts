@@ -22,6 +22,7 @@ export class Resolver
   private scopes: Map<string, boolean>[] = [];
   private currentFunction: FunctionType | undefined;
   private currentClass: ClassType | undefined;
+  private loopDepth: number = 0;
 
   constructor(interpreter: Interpreter) {
     this.interpreter = interpreter;
@@ -157,7 +158,44 @@ export class Resolver
 
   visitWhileStmt(stmt: Stmt.While): void {
     this.resolveExpr(stmt.condition);
+    this.loopDepth++;
     this.resolveStmt(stmt.body);
+    this.loopDepth--;
+  }
+
+  visitBreakStmt(stmt: Stmt.Break): void {
+    if (this.loopDepth === 0) {
+      throw LangError.runtimeError(
+        "Cannot use 'break' outside of a loop.",
+        stmt.keyword,
+      );
+    }
+  }
+
+  visitContinueStmt(stmt: Stmt.Continue): void {
+    if (this.loopDepth === 0) {
+      throw LangError.runtimeError(
+        "Cannot use 'continue' outside of a loop.",
+        stmt.keyword,
+      );
+    }
+  }
+
+  visitForStmt(stmt: Stmt.For): void {
+    this.beginScope();
+    if (stmt.initializer) {
+      this.resolveStmt(stmt.initializer);
+    }
+    if (stmt.condition) {
+      this.resolveExpr(stmt.condition);
+    }
+    if (stmt.increment) {
+      this.resolveExpr(stmt.increment);
+    }
+    this.loopDepth++;
+    this.resolveStmt(stmt.body);
+    this.loopDepth--;
+    this.endScope();
   }
 
   visitClassStmt(stmt: Stmt.Class): void {
@@ -230,12 +268,10 @@ export class Resolver
     this.resolveExpr(expr.expression);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   visitLiteralExpr(_expr: Expr.LiteralExpr): void {
     return;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   visitArrayExpr(_expr: Expr.ArrayExpr): void {
     return;
   }

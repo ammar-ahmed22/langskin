@@ -13,7 +13,12 @@ import {
 import { Token, TokenType } from "../lex/token";
 import { LangError } from "../errors/error";
 import { LangClass } from "./callable/class";
-import { LangFunction, ReturnValue } from "./callable";
+import {
+  LangFunction,
+  ReturnValue,
+  BreakException,
+  ContinueException,
+} from "./callable";
 import { Reporter } from "../reporter/reporter";
 
 export class Interpreter
@@ -339,7 +344,7 @@ export class Interpreter
   visitAssignExpr(expr: Expr.Assign): Literal {
     const resolvedValue = this.evaluate(expr.value);
     const distance = this.locals.get(expr);
-    if (distance) {
+    if (distance !== undefined) {
       this.environment.assignAt(distance, expr.name, resolvedValue);
     } else {
       this.globals.assign(expr.name, resolvedValue);
@@ -584,7 +589,55 @@ export class Interpreter
 
   visitWhileStmt(stmt: Stmt.While): void {
     while (this.isTruthy(this.evaluate(stmt.condition))) {
-      this.execute(stmt.body);
+      try {
+        this.execute(stmt.body);
+      } catch (e) {
+        if (e instanceof BreakException) break;
+        if (e instanceof ContinueException) continue;
+        throw e;
+      }
+    }
+  }
+
+  visitBreakStmt(_stmt: Stmt.Break): void {
+    throw new BreakException();
+  }
+
+  visitContinueStmt(_stmt: Stmt.Continue): void {
+    throw new ContinueException();
+  }
+
+  visitForStmt(stmt: Stmt.For): void {
+    const env = new Environment(this.environment);
+    const previous = this.environment;
+    this.environment = env;
+
+    try {
+      if (stmt.initializer) {
+        this.execute(stmt.initializer);
+      }
+
+      while (
+        stmt.condition === null ||
+        this.isTruthy(this.evaluate(stmt.condition))
+      ) {
+        try {
+          this.execute(stmt.body);
+        } catch (e) {
+          if (e instanceof BreakException) break;
+          if (e instanceof ContinueException) {
+            // Continue should still execute the increment
+          } else {
+            throw e;
+          }
+        }
+        // Always execute increment (even after continue)
+        if (stmt.increment) {
+          this.evaluate(stmt.increment);
+        }
+      }
+    } finally {
+      this.environment = previous;
     }
   }
 

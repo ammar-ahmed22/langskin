@@ -196,6 +196,62 @@ describe("Interpreter", () => {
     expect(output).toEqual(["0", "1", "2"]);
   });
 
+  it("should handle break in while loop", () => {
+    const output = run(`
+      let i = 0;
+      while (i < 10) {
+        if (i == 3) { break; }
+        print i;
+        i = i + 1;
+      }
+    `);
+    expect(output).toEqual(["0", "1", "2"]);
+  });
+
+  it("should handle break in for loop", () => {
+    const output = run(`
+      for (let i = 0; i < 10; i = i + 1) {
+        if (i == 3) { break; }
+        print i;
+      }
+    `);
+    expect(output).toEqual(["0", "1", "2"]);
+  });
+
+  it("should handle continue in while loop", () => {
+    const output = run(`
+      let i = 0;
+      while (i < 5) {
+        i = i + 1;
+        if (i == 3) { continue; }
+        print i;
+      }
+    `);
+    expect(output).toEqual(["1", "2", "4", "5"]);
+  });
+
+  it("should handle continue in for loop", () => {
+    const output = run(`
+      for (let i = 0; i < 5; i = i + 1) {
+        if (i == 2) { continue; }
+        print i;
+      }
+    `);
+    expect(output).toEqual(["0", "1", "3", "4"]);
+  });
+
+  it("should handle break in nested loop (only exits inner)", () => {
+    const output = run(`
+      for (let i = 0; i < 3; i = i + 1) {
+        for (let j = 0; j < 3; j = j + 1) {
+          if (j == 1) { break; }
+          print i * 10 + j;
+        }
+      }
+    `);
+    expect(output).toEqual(["0", "10", "20"]);
+  });
+
   it("should handle nested function calls", () => {
     const output = run(
       "fun square(x) { return x * x; } fun double(y) { return y + y; } print square(double(3));",
@@ -719,6 +775,27 @@ describe("Interpreter", () => {
       expectResolutionError(
         "class A inherits A {}",
         "A class cannot inherit from itself.",
+      );
+    });
+
+    it("should error on 'break' outside of loop", () => {
+      expectResolutionError(
+        "break;",
+        "Cannot use 'break' outside of a loop.",
+      );
+    });
+
+    it("should error on 'continue' outside of loop", () => {
+      expectResolutionError(
+        "continue;",
+        "Cannot use 'continue' outside of a loop.",
+      );
+    });
+
+    it("should error on 'break' in function but outside loop", () => {
+      expectResolutionError(
+        "fun f() { break; }",
+        "Cannot use 'break' outside of a loop.",
       );
     });
   });

@@ -64,8 +64,8 @@ export enum TokenType {
 export function tokenTypeFromKeyword(
   keyword: string,
   // TODO: Define a proper spec type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  spec: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _spec: any,
 ): TokenType | null {
   // TODO: This should be based on the passed in spec afterwords
   // i.e. users can define their own keywords

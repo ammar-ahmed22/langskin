@@ -17,3 +17,15 @@ export class ReturnValue extends Error {
     super();
   }
 }
+
+export class BreakException extends Error {
+  constructor() {
+    super();
+  }
+}
+
+export class ContinueException extends Error {
+  constructor() {
+    super();
+  }
+}

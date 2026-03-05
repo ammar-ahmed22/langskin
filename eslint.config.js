@@ -11,4 +11,15 @@ export default tseslint.config(
   {
     ignores: ["**/node_modules/", "**/dist/", "**/*.config.*"],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 );

@@ -530,34 +530,49 @@ describe("Parser", () => {
   describe("for statements", () => {
     it("should parse full for loop", () => {
       const stmts = parse("for (let i = 0; i < 10; i++) print i;");
-      // For is desugared to while
-      expect(stmts[0]).toBeInstanceOf(Stmt.Block);
+      expect(stmts[0]).toBeInstanceOf(Stmt.For);
+      const forStmt = stmts[0] as Stmt.For;
+      expect(forStmt.initializer).toBeInstanceOf(Stmt.Var);
+      expect(forStmt.condition).toBeInstanceOf(Expr.Binary);
+      expect(forStmt.increment).toBeInstanceOf(Expr.Assign);
+      expect(forStmt.body).toBeInstanceOf(Stmt.Print);
     });
 
     it("should parse for with no initializer", () => {
       const stmts = parse("for (; i < 10; i++) print i;");
-      expect(stmts[0]).toBeInstanceOf(Stmt.While);
+      expect(stmts[0]).toBeInstanceOf(Stmt.For);
+      const forStmt = stmts[0] as Stmt.For;
+      expect(forStmt.initializer).toBeNull();
     });
 
     it("should parse for with no condition", () => {
       const stmts = parse("for (let i = 0;; i++) print i;");
-      // Should create infinite loop (condition = true)
-      expect(stmts[0]).toBeInstanceOf(Stmt.Block);
+      expect(stmts[0]).toBeInstanceOf(Stmt.For);
+      const forStmt = stmts[0] as Stmt.For;
+      expect(forStmt.condition).toBeNull();
     });
 
     it("should parse for with no increment", () => {
       const stmts = parse("for (let i = 0; i < 10;) print i;");
-      expect(stmts[0]).toBeInstanceOf(Stmt.Block);
+      expect(stmts[0]).toBeInstanceOf(Stmt.For);
+      const forStmt = stmts[0] as Stmt.For;
+      expect(forStmt.increment).toBeNull();
     });
 
     it("should parse for with expression initializer", () => {
       const stmts = parse("for (i = 0; i < 10; i++) print i;");
-      expect(stmts[0]).toBeInstanceOf(Stmt.Block);
+      expect(stmts[0]).toBeInstanceOf(Stmt.For);
+      const forStmt = stmts[0] as Stmt.For;
+      expect(forStmt.initializer).toBeInstanceOf(Stmt.Expression);
     });
 
     it("should parse empty for loop", () => {
       const stmts = parse("for (;;) print 1;");
-      expect(stmts[0]).toBeInstanceOf(Stmt.While);
+      expect(stmts[0]).toBeInstanceOf(Stmt.For);
+      const forStmt = stmts[0] as Stmt.For;
+      expect(forStmt.initializer).toBeNull();
+      expect(forStmt.condition).toBeNull();
+      expect(forStmt.increment).toBeNull();
     });
 
     it("should error on missing ( after for", () => {

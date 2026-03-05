@@ -10,4 +10,7 @@ export interface StmtVisitor<T> {
   visitFunctionStmt(stmt: Stmt.FunctionStmt): T;
   visitReturnStmt(stmt: Stmt.Return): T;
   visitClassStmt(stmt: Stmt.Class): T;
+  visitBreakStmt(stmt: Stmt.Break): T;
+  visitContinueStmt(stmt: Stmt.Continue): T;
+  visitForStmt(stmt: Stmt.For): T;
 }

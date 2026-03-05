@@ -202,6 +202,14 @@ export class Parser {
       return this.whileStatement();
     }
 
+    if (this.matchTypes(TokenType.Break)) {
+      return this.breakStatement();
+    }
+
+    if (this.matchTypes(TokenType.Continue)) {
+      return this.continueStatement();
+    }
+
     if (this.matchTypes(TokenType.LeftBrace)) {
       return new Stmt.Block(this.block());
     }
@@ -220,6 +228,18 @@ export class Parser {
     );
     const body = this.statement();
     return new Stmt.While(condition, body);
+  }
+
+  private breakStatement(): Stmt.Statement {
+    const keyword = this.previous();
+    this.consume(TokenType.Semicolon, "Expect ';' after 'break'.");
+    return new Stmt.Break(keyword);
+  }
+
+  private continueStatement(): Stmt.Statement {
+    const keyword = this.previous();
+    this.consume(TokenType.Semicolon, "Expect ';' after 'continue'.");
+    return new Stmt.Continue(keyword);
   }
 
   private returnStatement(): Stmt.Statement {
@@ -298,23 +318,9 @@ export class Parser {
       "Expect ')' after 'for' clauses.",
     );
 
-    let body = this.statement();
+    const body = this.statement();
 
-    if (increment !== null) {
-      body = new Stmt.Block([body, new Stmt.Expression(increment)]);
-    }
-
-    let whileCondition = condition;
-    if (whileCondition === null) {
-      whileCondition = new Expr.LiteralExpr(Literal.bool(true));
-    }
-
-    body = new Stmt.While(whileCondition, body);
-    if (initializer !== null) {
-      body = new Stmt.Block([initializer, body]);
-    }
-
-    return body;
+    return new Stmt.For(initializer, condition, increment, body);
   }
 
   private varDeclaration(): Stmt.Statement {
