@@ -1,7 +1,7 @@
 {
   "name": "langskin",
-  "version": "0.0.4",
-  "description": "Create your own programming language syntax",
+  "version": "0.0.5",
+  "description": "A customizable programming language interpreter that lets you redefine keywords via a simple JSON map",
   "license": "MIT",
   "homepage": "https://github.com/ammar-ahmed22/langskin/tree/main/packages/core#readme",
   "repository": {
