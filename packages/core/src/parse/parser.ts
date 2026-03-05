@@ -256,7 +256,9 @@ export class Parser {
     );
     const then = this.statement();
     let elseBranch = null;
-    if (this.matchTypes(TokenType.Else)) {
+    if (this.matchTypes(TokenType.ElseIf)) {
+      elseBranch = this.ifStatement();
+    } else if (this.matchTypes(TokenType.Else)) {
       elseBranch = this.statement();
     }
 

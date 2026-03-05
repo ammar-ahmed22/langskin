@@ -156,6 +156,32 @@ describe("Interpreter", () => {
     expect(output).toEqual(["0"]);
   });
 
+  it("should handle elif statements", () => {
+    const output = run(
+      "let x = 5; if (x > 10) { print 1; } elif (x > 3) { print 2; } else { print 3; }",
+    );
+    expect(output).toEqual(["2"]);
+  });
+
+  it("should handle chained elif statements", () => {
+    const output = run(`
+      let x = 3;
+      if (x == 1) { print "one"; }
+      elif (x == 2) { print "two"; }
+      elif (x == 3) { print "three"; }
+      elif (x == 4) { print "four"; }
+      else { print "other"; }
+    `);
+    expect(output).toEqual(["three"]);
+  });
+
+  it("should handle elif without else", () => {
+    const output = run(
+      "let x = 5; if (x > 10) { print 1; } elif (x > 3) { print 2; }",
+    );
+    expect(output).toEqual(["2"]);
+  });
+
   it("should handle logical operators", () => {
     const output = run(
       "let a = true; let b = false; if (a and not b) { print 1; } else { print 0; }",
