@@ -1,6 +1,6 @@
 export {
   Callable,
-  ReturnValue,
+  ReturnException,
   BreakException,
   ContinueException,
 } from "./base";

@@ -1,4 +1,4 @@
-import { Callable, ReturnValue } from "./base";
+import { Callable, ReturnException } from "./base";
 import { Stmt } from "../../ast";
 import { LangError } from "../../errors/error";
 import { Token } from "../../lex/token";
@@ -42,7 +42,7 @@ export class LangFunction extends Callable {
       try {
         interpreter.executeBlock(this.declaration.body, env);
       } catch (returnValue: unknown) {
-        if (returnValue instanceof ReturnValue) {
+        if (returnValue instanceof ReturnException) {
           if (this.isInitializer) {
             // TODO: Spec should be used here to interpolate the user's keyword for "this"
             return this.closure.getAt(0, "this");

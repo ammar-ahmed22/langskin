@@ -12,7 +12,7 @@ export abstract class Callable {
   abstract toString(): string;
 }
 
-export class ReturnValue extends Error {
+export class ReturnException extends Error {
   constructor(public value: Literal) {
     super();
   }

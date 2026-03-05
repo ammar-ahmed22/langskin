@@ -15,7 +15,7 @@ import { LangError } from "../errors/error";
 import { LangClass } from "./callable/class";
 import {
   LangFunction,
-  ReturnValue,
+  ReturnException,
   BreakException,
   ContinueException,
 } from "./callable";
@@ -651,7 +651,7 @@ export class Interpreter
     if (stmt.value) {
       value = this.evaluate(stmt.value);
     }
-    throw new ReturnValue(value);
+    throw new ReturnException(value);
   }
 
   visitClassStmt(stmt: Stmt.Class): void {
