@@ -719,6 +719,200 @@ describe("Interpreter", () => {
         "Only arrays and strings can be indexed.",
       );
     });
+
+    it("should error when subtracting non-numbers", () => {
+      expectRuntimeError(
+        'print "a" - "b";',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when multiplying non-numbers", () => {
+      expectRuntimeError(
+        'print "a" * 2;',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when dividing non-numbers", () => {
+      expectRuntimeError(
+        'print "a" / 2;',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when using modulo with non-numbers", () => {
+      expectRuntimeError(
+        'print "a" % 2;',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when using >= with non-numbers", () => {
+      expectRuntimeError(
+        'print "a" >= "b";',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when using < with non-numbers", () => {
+      expectRuntimeError(
+        'print "a" < "b";',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when using <= with non-numbers", () => {
+      expectRuntimeError(
+        'print "a" <= "b";',
+        "Operands must be numbers.",
+      );
+    });
+
+    it("should error when accessing undefined variable", () => {
+      expectRuntimeError(
+        "print undefinedVar;",
+        "Undefined variable 'undefinedVar'.",
+      );
+    });
+
+    it("should error when accessing undefined property on instance", () => {
+      expectRuntimeError(
+        "class A {} let a = A(); print a.nonexistent;",
+        "Undefined property 'nonexistent'.",
+      );
+    });
+
+    it("should error when setting array index out of bounds", () => {
+      expectRuntimeError(
+        "let arr = [1, 2]; arr[10] = 5;",
+        "Index out of bounds.",
+      );
+    });
+
+    it("should error when using non-number as array index", () => {
+      expectRuntimeError(
+        'let arr = [1, 2]; print arr["foo"];',
+        "Index must be a number.",
+      );
+    });
+
+    it("should error when using non-number as array set index", () => {
+      expectRuntimeError(
+        'let arr = [1, 2]; arr["foo"] = 5;',
+        "Index must be a number.",
+      );
+    });
+
+    it("should error on inheriting from non-class", () => {
+      expectRuntimeError(
+        "let x = 5; class A inherits x {}",
+        "'inherits' target must be a 'class'.",
+      );
+    });
+  });
+
+  describe("printing", () => {
+    it("should print function representation", () => {
+      const output = run(
+        "fun greet(name) { print name; } print greet;",
+      );
+      expect(output).toEqual(["<fn greet(name)>"]);
+    });
+
+    it("should print class representation", () => {
+      const output = run("class MyClass {} print MyClass;");
+      expect(output).toEqual(["MyClass"]);
+    });
+
+    it("should print instance representation", () => {
+      const output = run("class Foo {} let f = Foo(); print f;");
+      expect(output).toEqual(["<instanceof Foo>"]);
+    });
+
+    it("should print array with elements", () => {
+      const output = run('print [1, "two", true];');
+      expect(output).toEqual(["[1, two, true]"]);
+    });
+
+    it("should print nested arrays", () => {
+      const output = run("print [[1, 2], [3, 4]];");
+      expect(output).toEqual(["[[1, 2], [3, 4]]"]);
+    });
+  });
+
+  describe("equality", () => {
+    it("should compare nil values as equal", () => {
+      const output = run("print nil == nil;");
+      expect(output).toEqual(["true"]);
+    });
+
+    it("should compare nil to non-nil as not equal", () => {
+      const output = run("print nil == 5;");
+      expect(output).toEqual(["false"]);
+    });
+
+    it("should compare non-nil to nil as not equal", () => {
+      const output = run("print 5 == nil;");
+      expect(output).toEqual(["false"]);
+    });
+
+    it("should compare strings by value", () => {
+      const output = run('print "hello" == "hello";');
+      expect(output).toEqual(["true"]);
+    });
+
+    it("should compare booleans by value", () => {
+      const output = run("print true == true;");
+      expect(output).toEqual(["true"]);
+    });
+
+    it("should use != for not equal", () => {
+      const output = run("print 1 != 2;");
+      expect(output).toEqual(["true"]);
+    });
+
+    it("should compare different types as not equal", () => {
+      const output = run('print 1 == "1";');
+      expect(output).toEqual(["false"]);
+    });
+  });
+
+  describe("scoping", () => {
+    it("should handle nested scope variable shadowing", () => {
+      const output = run(`
+        let x = 1;
+        {
+          let x = 2;
+          print x;
+        }
+        print x;
+      `);
+      expect(output).toEqual(["2", "1"]);
+    });
+
+    it("should handle variable assignment in nested scope", () => {
+      const output = run(`
+        let x = 1;
+        {
+          x = 2;
+        }
+        print x;
+      `);
+      expect(output).toEqual(["2"]);
+    });
+
+    it("should access variable from enclosing scope", () => {
+      const output = run(`
+        let outer = "outer";
+        {
+          let inner = "inner";
+          print outer;
+          print inner;
+        }
+      `);
+      expect(output).toEqual(["outer", "inner"]);
+    });
   });
 
   describe("resolution errors", () => {

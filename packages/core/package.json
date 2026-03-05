@@ -18,6 +18,7 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   }
 }
