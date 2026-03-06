@@ -915,6 +915,593 @@ describe("Interpreter", () => {
     });
   });
 
+  describe("standard library functions", () => {
+    describe("abs", () => {
+      it("should return absolute value of positive number", () => {
+        const output = run("print abs(5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should return absolute value of negative number", () => {
+        const output = run("print abs(-5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should return zero for zero", () => {
+        const output = run("print abs(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should handle floating point numbers", () => {
+        const output = run("print abs(-3.14);");
+        expect(output).toEqual(["3.14"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'abs("hello");',
+          "Argument to 'abs' must be a number.",
+        );
+      });
+    });
+
+    describe("max", () => {
+      it("should return the larger of two numbers", () => {
+        const output = run("print max(3, 7);");
+        expect(output).toEqual(["7"]);
+      });
+
+      it("should return first when equal", () => {
+        const output = run("print max(5, 5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should handle negative numbers", () => {
+        const output = run("print max(-10, -3);");
+        expect(output).toEqual(["-3"]);
+      });
+
+      it("should handle floating point numbers", () => {
+        const output = run("print max(2.5, 2.7);");
+        expect(output).toEqual(["2.7"]);
+      });
+
+      it("should error when called with non-numbers", () => {
+        expectRuntimeError(
+          'max(1, "hello");',
+          "Arguments to 'max' must be numbers.",
+        );
+      });
+    });
+
+    describe("min", () => {
+      it("should return the smaller of two numbers", () => {
+        const output = run("print min(3, 7);");
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should return first when equal", () => {
+        const output = run("print min(5, 5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should handle negative numbers", () => {
+        const output = run("print min(-10, -3);");
+        expect(output).toEqual(["-10"]);
+      });
+
+      it("should handle floating point numbers", () => {
+        const output = run("print min(2.5, 2.7);");
+        expect(output).toEqual(["2.5"]);
+      });
+
+      it("should error when called with non-numbers", () => {
+        expectRuntimeError(
+          'min(1, "hello");',
+          "Arguments to 'min' must be numbers.",
+        );
+      });
+    });
+
+    describe("ceil", () => {
+      it("should round up to nearest integer", () => {
+        const output = run("print ceil(3.2);");
+        expect(output).toEqual(["4"]);
+      });
+
+      it("should return same value for integers", () => {
+        const output = run("print ceil(5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should handle negative numbers", () => {
+        const output = run("print ceil(-3.7);");
+        expect(output).toEqual(["-3"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'ceil("hello");',
+          "Argument to 'ceil' must be a number.",
+        );
+      });
+    });
+
+    describe("floor", () => {
+      it("should round down to nearest integer", () => {
+        const output = run("print floor(3.7);");
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should return same value for integers", () => {
+        const output = run("print floor(5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should handle negative numbers", () => {
+        const output = run("print floor(-3.2);");
+        expect(output).toEqual(["-4"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'floor("hello");',
+          "Argument to 'floor' must be a number.",
+        );
+      });
+    });
+
+    describe("pow", () => {
+      it("should compute power of two numbers", () => {
+        const output = run("print pow(2, 3);");
+        expect(output).toEqual(["8"]);
+      });
+
+      it("should handle zero exponent", () => {
+        const output = run("print pow(5, 0);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should handle negative exponent", () => {
+        const output = run("print pow(2, -1);");
+        expect(output).toEqual(["0.5"]);
+      });
+
+      it("should handle fractional exponent", () => {
+        const output = run("print pow(4, 0.5);");
+        expect(output).toEqual(["2"]);
+      });
+
+      it("should error when called with non-numbers", () => {
+        expectRuntimeError(
+          'pow(2, "hello");',
+          "Arguments to 'pow' must be numbers.",
+        );
+      });
+    });
+
+    describe("sqrt", () => {
+      it("should compute square root", () => {
+        const output = run("print sqrt(16);");
+        expect(output).toEqual(["4"]);
+      });
+
+      it("should handle zero", () => {
+        const output = run("print sqrt(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should handle non-perfect squares", () => {
+        const output = run("print sqrt(2);");
+        expect(output).toEqual(["1.4142135623730951"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'sqrt("hello");',
+          "Argument to 'sqrt' must be a number.",
+        );
+      });
+    });
+
+    describe("rand", () => {
+      it("should return number within range", () => {
+        const output = run(`
+          let r = rand(0, 10);
+          print r >= 0 and r <= 10;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when min > max", () => {
+        expectRuntimeError(
+          "rand(10, 5);",
+          "First argument to 'rand' must be less than or equal to second argument.",
+        );
+      });
+
+      it("should error when called with non-numbers", () => {
+        expectRuntimeError(
+          'rand(1, "hello");',
+          "Arguments to 'rand' must be numbers.",
+        );
+      });
+    });
+
+    describe("randint", () => {
+      it("should return integer within range", () => {
+        const output = run(`
+          let r = randint(1, 10);
+          print r >= 1 and r <= 10 and isint(r);
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when min > max", () => {
+        expectRuntimeError(
+          "randint(10, 5);",
+          "First argument to 'randInt' must be less than or equal to second argument.",
+        );
+      });
+
+      it("should error when called with non-numbers", () => {
+        expectRuntimeError(
+          'randint(1, "hello");',
+          "Arguments to 'randint' must be numbers.",
+        );
+      });
+    });
+
+    describe("isint", () => {
+      it("should return true for integer", () => {
+        const output = run("print isint(5);");
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return false for float", () => {
+        const output = run("print isint(5.5);");
+        expect(output).toEqual(["false"]);
+      });
+
+      it("should return true for negative integer", () => {
+        const output = run("print isint(-3);");
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return true for zero", () => {
+        const output = run("print isint(0);");
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'isint("hello");',
+          "Argument to 'isint' must be a number.",
+        );
+      });
+    });
+
+    describe("typeof", () => {
+      it("should return 'number' for numbers", () => {
+        const output = run("print typeof(42);");
+        expect(output).toEqual(["number"]);
+      });
+
+      it("should return 'string' for strings", () => {
+        const output = run('print typeof("hello");');
+        expect(output).toEqual(["string"]);
+      });
+
+      it("should return 'array' for arrays", () => {
+        const output = run("print typeof([1, 2, 3]);");
+        expect(output).toEqual(["array"]);
+      });
+
+      it("should return 'function' for functions", () => {
+        const output = run("fun f() {} print typeof(f);");
+        expect(output).toEqual(["function"]);
+      });
+
+      it("should return 'instance' for class instances", () => {
+        const output = run("class A {} print typeof(A());");
+        expect(output).toEqual(["instance"]);
+      });
+
+      it("should return 'nil' for nil", () => {
+        const output = run("print typeof(nil);");
+        expect(output).toEqual(["nil"]);
+      });
+    });
+
+    describe("len", () => {
+      it("should return length of string", () => {
+        const output = run('print len("hello");');
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should return length of array", () => {
+        const output = run("print len([1, 2, 3, 4]);");
+        expect(output).toEqual(["4"]);
+      });
+
+      it("should return 0 for empty string", () => {
+        const output = run('print len("");');
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return 0 for empty array", () => {
+        const output = run("print len([]);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should error when called with non-string/array", () => {
+        expectRuntimeError(
+          "len(42);",
+          "Argument to 'len' must be a string or array.",
+        );
+      });
+    });
+
+    describe("now", () => {
+      it("should return a number", () => {
+        const output = run("print typeof(now());");
+        expect(output).toEqual(["number"]);
+      });
+
+      it("should return increasing values", () => {
+        const output = run(`
+          let t1 = now();
+          let t2 = now();
+          print t2 >= t1;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+    });
+
+    describe("index_of", () => {
+      it("should find index in string", () => {
+        const output = run('print index_of("hello", "l");');
+        expect(output).toEqual(["2"]);
+      });
+
+      it("should return -1 for not found in string", () => {
+        const output = run('print index_of("hello", "x");');
+        expect(output).toEqual(["-1"]);
+      });
+
+      it("should find index in array", () => {
+        const output = run("print index_of([10, 20, 30], 20);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should return -1 for not found in array", () => {
+        const output = run("print index_of([1, 2, 3], 99);");
+        expect(output).toEqual(["-1"]);
+      });
+
+      it("should error when first arg is not string or array", () => {
+        expectRuntimeError(
+          'index_of(42, "x");',
+          "First argument to 'index_of' must be a string or array.",
+        );
+      });
+
+      it("should error when searching string with non-string", () => {
+        expectRuntimeError(
+          'index_of("hello", 42);',
+          "Second argument to 'index_of' must be a string when the first argument is a string.",
+        );
+      });
+    });
+
+    describe("ord", () => {
+      it("should return ASCII code of character", () => {
+        const output = run('print ord("A");');
+        expect(output).toEqual(["65"]);
+      });
+
+      it("should handle lowercase", () => {
+        const output = run('print ord("a");');
+        expect(output).toEqual(["97"]);
+      });
+
+      it("should error for multi-character string", () => {
+        expectRuntimeError(
+          'ord("ab");',
+          "'ord' function expects a single character string",
+        );
+      });
+
+      it("should error for non-string", () => {
+        expectRuntimeError(
+          "ord(65);",
+          "'ord' function expects a string literal",
+        );
+      });
+    });
+
+    describe("str", () => {
+      it("should convert number to string", () => {
+        const output = run("print str(42);");
+        expect(output).toEqual(["42"]);
+      });
+
+      it("should convert boolean to string", () => {
+        const output = run("print str(true);");
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should convert nil to string", () => {
+        const output = run("print str(nil);");
+        expect(output).toEqual(["nil"]);
+      });
+
+      it("should convert array to string", () => {
+        const output = run("print str([1, 2, 3]);");
+        expect(output).toEqual(["[1, 2, 3]"]);
+      });
+    });
+
+    describe("substr", () => {
+      it("should extract substring", () => {
+        const output = run('print substr("hello", 1, 3);');
+        expect(output).toEqual(["ell"]);
+      });
+
+      it("should extract from beginning", () => {
+        const output = run('print substr("hello", 0, 2);');
+        expect(output).toEqual(["he"]);
+      });
+
+      it("should error on out of bounds", () => {
+        expectRuntimeError(
+          'substr("hello", 3, 10);',
+          "'substr' function indices are out of bounds",
+        );
+      });
+
+      it("should error on negative start", () => {
+        expectRuntimeError(
+          'substr("hello", -1, 2);',
+          "'substr' function indices are out of bounds",
+        );
+      });
+
+      it("should error for non-string first arg", () => {
+        expectRuntimeError(
+          "substr(123, 0, 2);",
+          "'substr' function expects a string as the first argument",
+        );
+      });
+    });
+
+    describe("replace", () => {
+      it("should replace first occurrence", () => {
+        const output = run('print replace("hello", "l", "L");');
+        expect(output).toEqual(["heLlo"]);
+      });
+
+      it("should return original if not found", () => {
+        const output = run('print replace("hello", "x", "y");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should error for non-string args", () => {
+        expectRuntimeError(
+          'replace(123, "a", "b");',
+          "'replace' function expects a string as the first argument",
+        );
+      });
+    });
+
+    describe("replace_all", () => {
+      it("should replace all occurrences", () => {
+        const output = run('print replace_all("hello", "l", "L");');
+        expect(output).toEqual(["heLLo"]);
+      });
+
+      it("should return original if not found", () => {
+        const output = run('print replace_all("hello", "x", "y");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should error for non-string args", () => {
+        expectRuntimeError(
+          'replace_all(123, "a", "b");',
+          "'replace_all' function expects a string as the first argument",
+        );
+      });
+    });
+
+    describe("push", () => {
+      it("should add element to array", () => {
+        const output = run(`
+          let arr = [1, 2];
+          push(arr, 3);
+          print arr;
+        `);
+        expect(output).toEqual(["[1, 2, 3]"]);
+      });
+
+      it("should mutate the original array", () => {
+        const output = run(`
+          let arr = [1, 2];
+          push(arr, 3);
+          print len(arr);
+        `);
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should return the modified array", () => {
+        const output = run(`
+          let arr = [1];
+          print push(arr, 2);
+        `);
+        expect(output).toEqual(["[1, 2]"]);
+      });
+
+      it("should error for non-array first arg", () => {
+        expectRuntimeError(
+          'push("hello", 1);',
+          "First argument to push must be an array",
+        );
+      });
+    });
+
+    describe("pop", () => {
+      it("should remove and return last element", () => {
+        const output = run(`
+          let arr = [1, 2, 3];
+          print pop(arr);
+        `);
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should mutate the original array", () => {
+        const output = run(`
+          let arr = [1, 2, 3];
+          pop(arr);
+          print arr;
+        `);
+        expect(output).toEqual(["[1, 2]"]);
+      });
+
+      it("should reduce array length after pop", () => {
+        const output = run(`
+          let arr = [1, 2, 3];
+          pop(arr);
+          print len(arr);
+        `);
+        expect(output).toEqual(["2"]);
+      });
+
+      it("should return nil for empty array", () => {
+        const output = run(`
+          let arr = [];
+          print pop(arr);
+        `);
+        expect(output).toEqual(["nil"]);
+      });
+
+      it("should allow multiple pops", () => {
+        const output = run(`
+          let arr = [1, 2, 3];
+          pop(arr);
+          pop(arr);
+          print arr;
+        `);
+        expect(output).toEqual(["[1]"]);
+      });
+
+      it("should error for non-array arg", () => {
+        expectRuntimeError(
+          'pop("hello");',
+          "First argument to pop must be an array",
+        );
+      });
+    });
+  });
+
   describe("resolution errors", () => {
     it("should error on 'this' outside of class", () => {
       expectResolutionError(
