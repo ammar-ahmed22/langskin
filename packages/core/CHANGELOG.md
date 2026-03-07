@@ -1,5 +1,11 @@
 # langskin
 
+## 0.1.1
+
+### Patch Changes
+
+- 77d08d0: Documentation for standard library functions
+
 ## 0.1.0
 
 ### Minor Changes
