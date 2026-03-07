@@ -1,6 +1,6 @@
 {
   "name": "langskin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A customizable programming language interpreter that lets you redefine keywords via a simple JSON map",
   "license": "MIT",
   "homepage": "https://github.com/ammar-ahmed22/langskin/tree/main/packages/core#readme",
