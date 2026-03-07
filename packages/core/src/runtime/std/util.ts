@@ -94,3 +94,57 @@ export const indexOfFn = new StdFunction({
   },
   arity: 2,
 });
+
+export const containsFn = new StdFunction({
+  name: "contains",
+  func: (interpreter, args, paren) => {
+    const [target, search] = args;
+    if (isStringLiteral(target)) {
+      if (!isStringLiteral(search)) {
+        throw LangError.runtimeError(
+          "Second argument to 'contains' must be a string when the first argument is a string.",
+          paren,
+        );
+      }
+      return Literal.bool(target.value.includes(search.value));
+    }
+
+    if (isArrayLiteral(target)) {
+      const found = target.value.some((item) => {
+        return interpreter.isEqual(item, search!);
+      });
+      return Literal.bool(found);
+    }
+
+    throw LangError.runtimeError(
+      "First argument to 'contains' must be a string or array.",
+      paren,
+    );
+  },
+  arity: 2,
+});
+
+export const rangeFn = new StdFunction({
+  name: "range",
+  func: (_, args, paren) => {
+    const [start, end] = args;
+    if (!isNumberLiteral(start)) {
+      throw LangError.runtimeError(
+        "First argument to 'range' must be a number.",
+        paren,
+      );
+    }
+    if (!isNumberLiteral(end)) {
+      throw LangError.runtimeError(
+        "Second argument to 'range' must be a number.",
+        paren,
+      );
+    }
+    const result = [];
+    for (let i = start.value; i < end.value; i++) {
+      result.push(Literal.number(i));
+    }
+    return Literal.array(result);
+  },
+  arity: 2,
+});
