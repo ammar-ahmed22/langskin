@@ -1,17 +1,12 @@
-name: Core Build
+name: Core Tests on PR
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "packages/core/**"
   pull_request:
     paths:
       - "packages/core/**"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,5 +25,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm --filter langskin build
+      - name: Run tests
+        run: pnpm --filter langskin test run

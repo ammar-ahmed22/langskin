@@ -5,8 +5,7 @@
         <a href="https://www.npmjs.com/package/langskin" target="_blank" rel="noopener noreferrer">
             <img alt="NPM Version" src="https://img.shields.io/npm/v/langskin?registry_uri=https%3A%2F%2Fregistry.npmjs.com&style=flat&logo=npm&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Flangskin"></img>
         </a>
-        <img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/ammar-ahmed22/langskin/core-build.yml"></img>
-        <img alt="Tests status" src="https://img.shields.io/github/actions/workflow/status/ammar-ahmed22/langskin/core-tests.yml?label=tests"></img>
+        <img alt="Release status" src="https://img.shields.io/github/actions/workflow/status/ammar-ahmed22/langskin/core-release.yml?label=release"></img>
     </div>
 </div>
 
