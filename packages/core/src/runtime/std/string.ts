@@ -143,3 +143,92 @@ export const replaceAllFn = new StdFunction({
   },
   arity: 3,
 });
+
+export const charFn = new StdFunction({
+  name: "char",
+  func: (_, args, paren) => {
+    const [code] = args;
+    if (isNumberLiteral(code)) {
+      return Literal.string(String.fromCharCode(code.value));
+    } else {
+      throw LangError.runtimeError(
+        "'char' function expects a number",
+        paren,
+      );
+    }
+  },
+  arity: 1,
+});
+
+export const upperFn = new StdFunction({
+  name: "upper",
+  func: (_, args, paren) => {
+    const [str] = args;
+    if (isStringLiteral(str)) {
+      return Literal.string(str.value.toUpperCase());
+    } else {
+      throw LangError.runtimeError(
+        "'upper' function expects a string",
+        paren,
+      );
+    }
+  },
+  arity: 1,
+});
+
+export const lowerFn = new StdFunction({
+  name: "lower",
+  func: (_, args, paren) => {
+    const [str] = args;
+    if (isStringLiteral(str)) {
+      return Literal.string(str.value.toLowerCase());
+    } else {
+      throw LangError.runtimeError(
+        "'lower' function expects a string",
+        paren,
+      );
+    }
+  },
+  arity: 1,
+});
+
+export const trimFn = new StdFunction({
+  name: "trim",
+  func: (_, args, paren) => {
+    const [str] = args;
+    if (isStringLiteral(str)) {
+      return Literal.string(str.value.trim());
+    } else {
+      throw LangError.runtimeError(
+        "'trim' function expects a string",
+        paren,
+      );
+    }
+  },
+  arity: 1,
+});
+
+export const splitFn = new StdFunction({
+  name: "split",
+  func: (_, args, paren) => {
+    const [str, separator] = args;
+    if (!isStringLiteral(str)) {
+      throw LangError.runtimeError(
+        "'split' function expects a string as the first argument",
+        paren,
+      );
+    }
+
+    if (!isStringLiteral(separator)) {
+      throw LangError.runtimeError(
+        "'split' function expects a string as the second argument",
+        paren,
+      );
+    }
+    const strValue = str.value;
+    const separatorValue = separator.value;
+    const result = strValue.split(separatorValue).map(Literal.string);
+    return Literal.array(result);
+  },
+  arity: 2,
+});
