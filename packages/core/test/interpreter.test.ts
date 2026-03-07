@@ -1500,6 +1500,863 @@ describe("Interpreter", () => {
         );
       });
     });
+
+    describe("join", () => {
+      it("should join array elements with separator", () => {
+        const output = run('print join([1, 2, 3], "-");');
+        expect(output).toEqual(["1-2-3"]);
+      });
+
+      it("should join string elements", () => {
+        const output = run('print join(["a", "b", "c"], ", ");');
+        expect(output).toEqual(["a, b, c"]);
+      });
+
+      it("should handle empty separator", () => {
+        const output = run('print join([1, 2, 3], "");');
+        expect(output).toEqual(["123"]);
+      });
+
+      it("should return empty string for empty array", () => {
+        const output = run('print join([], "-");');
+        expect(output).toEqual([""]);
+      });
+
+      it("should handle single element array", () => {
+        const output = run('print join([42], ",");');
+        expect(output).toEqual(["42"]);
+      });
+
+      it("should convert mixed types to strings", () => {
+        const output = run('print join([1, "two", true], " ");');
+        expect(output).toEqual(["1 two true"]);
+      });
+
+      it("should error when first argument is not an array", () => {
+        expectRuntimeError(
+          'join("hello", "-");',
+          "'join' function expects an array as the first argument",
+        );
+      });
+
+      it("should error when second argument is not a string", () => {
+        expectRuntimeError(
+          "join([1, 2], 3);",
+          "'join' function expects a string as the second argument",
+        );
+      });
+    });
+
+    describe("slice", () => {
+      it("should slice array from start to end", () => {
+        const output = run("print slice([1, 2, 3, 4, 5], 1, 4);");
+        expect(output).toEqual(["[2, 3, 4]"]);
+      });
+
+      it("should slice from beginning", () => {
+        const output = run("print slice([1, 2, 3, 4, 5], 0, 3);");
+        expect(output).toEqual(["[1, 2, 3]"]);
+      });
+
+      it("should slice to end", () => {
+        const output = run("print slice([1, 2, 3, 4, 5], 3, 5);");
+        expect(output).toEqual(["[4, 5]"]);
+      });
+
+      it("should return empty array when start equals end", () => {
+        const output = run("print slice([1, 2, 3], 1, 1);");
+        expect(output).toEqual(["[]"]);
+      });
+
+      it("should handle negative indices", () => {
+        const output = run("print slice([1, 2, 3, 4, 5], -2, 5);");
+        expect(output).toEqual(["[4, 5]"]);
+      });
+
+      it("should return entire array copy", () => {
+        const output = run(`
+          let arr = [1, 2, 3];
+          let sliced = slice(arr, 0, 3);
+          push(sliced, 4);
+          print arr;
+        `);
+        expect(output).toEqual(["[1, 2, 3]"]);
+      });
+
+      it("should error when first argument is not an array", () => {
+        expectRuntimeError(
+          'slice("hello", 0, 2);',
+          "'slice' function expects an array as the first argument",
+        );
+      });
+
+      it("should error when second argument is not a number", () => {
+        expectRuntimeError(
+          'slice([1, 2, 3], "0", 2);',
+          "'slice' function expects a number as the second argument",
+        );
+      });
+
+      it("should error when third argument is not a number", () => {
+        expectRuntimeError(
+          'slice([1, 2, 3], 0, "2");',
+          "'slice' function expects a number as the third argument",
+        );
+      });
+    });
+
+    describe("reversed", () => {
+      it("should return reversed copy of array", () => {
+        const output = run("print reversed([1, 2, 3]);");
+        expect(output).toEqual(["[3, 2, 1]"]);
+      });
+
+      it("should not mutate original array", () => {
+        const output = run(`
+          let arr = [1, 2, 3];
+          let rev = reversed(arr);
+          print arr;
+        `);
+        expect(output).toEqual(["[1, 2, 3]"]);
+      });
+
+      it("should handle empty array", () => {
+        const output = run("print reversed([]);");
+        expect(output).toEqual(["[]"]);
+      });
+
+      it("should handle single element array", () => {
+        const output = run("print reversed([42]);");
+        expect(output).toEqual(["[42]"]);
+      });
+
+      it("should handle string elements", () => {
+        const output = run('print reversed(["a", "b", "c"]);');
+        expect(output).toEqual(["[c, b, a]"]);
+      });
+
+      it("should error when argument is not an array", () => {
+        expectRuntimeError(
+          'reversed("hello");',
+          "'reversed' function expects an array as the argument",
+        );
+      });
+    });
+
+    describe("round", () => {
+      it("should round down for .4", () => {
+        const output = run("print round(3.4);");
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should round up for .5", () => {
+        const output = run("print round(3.5);");
+        expect(output).toEqual(["4"]);
+      });
+
+      it("should round up for .6", () => {
+        const output = run("print round(3.6);");
+        expect(output).toEqual(["4"]);
+      });
+
+      it("should return integer unchanged", () => {
+        const output = run("print round(5);");
+        expect(output).toEqual(["5"]);
+      });
+
+      it("should handle negative numbers", () => {
+        const output = run("print round(-2.5);");
+        expect(output).toEqual(["-2"]);
+      });
+
+      it("should handle zero", () => {
+        const output = run("print round(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'round("hello");',
+          "Argument to 'round' must be a number.",
+        );
+      });
+    });
+
+    describe("sign", () => {
+      it("should return 1 for positive numbers", () => {
+        const output = run("print sign(42);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should return -1 for negative numbers", () => {
+        const output = run("print sign(-42);");
+        expect(output).toEqual(["-1"]);
+      });
+
+      it("should return 0 for zero", () => {
+        const output = run("print sign(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should handle floating point numbers", () => {
+        const output = run("print sign(0.001);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'sign("hello");',
+          "Argument to 'sign' must be a number.",
+        );
+      });
+    });
+
+    describe("sin", () => {
+      it("should return 0 for sin(0)", () => {
+        const output = run("print sin(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return 1 for sin(PI/2)", () => {
+        const output = run("print sin(1.5707963267948966);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should handle negative angles", () => {
+        const output = run("print sin(-1.5707963267948966);");
+        expect(output).toEqual(["-1"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'sin("hello");',
+          "Argument to 'sin' must be a number.",
+        );
+      });
+    });
+
+    describe("cos", () => {
+      it("should return 1 for cos(0)", () => {
+        const output = run("print cos(0);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should return approximately 0 for cos(PI/2)", () => {
+        const output = run(`
+          let result = cos(1.5707963267948966);
+          print result < 0.0001 and result > -0.0001;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return -1 for cos(PI)", () => {
+        const output = run("print cos(3.141592653589793);");
+        expect(output).toEqual(["-1"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'cos("hello");',
+          "Argument to 'cos' must be a number.",
+        );
+      });
+    });
+
+    describe("tan", () => {
+      it("should return 0 for tan(0)", () => {
+        const output = run("print tan(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return approximately 1 for tan(PI/4)", () => {
+        const output = run(`
+          let result = tan(0.7853981633974483);
+          print result > 0.9999 and result < 1.0001;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'tan("hello");',
+          "Argument to 'tan' must be a number.",
+        );
+      });
+    });
+
+    describe("asin", () => {
+      it("should return 0 for asin(0)", () => {
+        const output = run("print asin(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return PI/2 for asin(1)", () => {
+        const output = run(`
+          let result = asin(1);
+          print result > 1.57 and result < 1.58;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should handle negative values", () => {
+        const output = run(`
+          let result = asin(-1);
+          print result < -1.57 and result > -1.58;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'asin("hello");',
+          "Argument to 'asin' must be a number.",
+        );
+      });
+    });
+
+    describe("acos", () => {
+      it("should return 0 for acos(1)", () => {
+        const output = run("print acos(1);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return PI/2 for acos(0)", () => {
+        const output = run(`
+          let result = acos(0);
+          print result > 1.57 and result < 1.58;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return PI for acos(-1)", () => {
+        const output = run(`
+          let result = acos(-1);
+          print result > 3.14 and result < 3.15;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'acos("hello");',
+          "Argument to 'acos' must be a number.",
+        );
+      });
+    });
+
+    describe("atan", () => {
+      it("should return 0 for atan(0)", () => {
+        const output = run("print atan(0);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return PI/4 for atan(1)", () => {
+        const output = run(`
+          let result = atan(1);
+          print result > 0.785 and result < 0.786;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should handle negative values", () => {
+        const output = run(`
+          let result = atan(-1);
+          print result < -0.785 and result > -0.786;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'atan("hello");',
+          "Argument to 'atan' must be a number.",
+        );
+      });
+    });
+
+    describe("atan2", () => {
+      it("should return 0 for atan2(0, 1)", () => {
+        const output = run("print atan2(0, 1);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return PI/2 for atan2(1, 0)", () => {
+        const output = run(`
+          let result = atan2(1, 0);
+          print result > 1.57 and result < 1.58;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return PI for atan2(0, -1)", () => {
+        const output = run(`
+          let result = atan2(0, -1);
+          print result > 3.14 and result < 3.15;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should handle both negative values", () => {
+        const output = run(`
+          let result = atan2(-1, -1);
+          print result < -2.35 and result > -2.36;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-numbers", () => {
+        expectRuntimeError(
+          'atan2(1, "hello");',
+          "Arguments to 'atan2' must be numbers.",
+        );
+      });
+
+      it("should error when first arg is not a number", () => {
+        expectRuntimeError(
+          'atan2("hello", 1);',
+          "Arguments to 'atan2' must be numbers.",
+        );
+      });
+    });
+
+    describe("log", () => {
+      it("should return 0 for log(1)", () => {
+        const output = run("print log(1);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return 1 for log(e)", () => {
+        const output = run(`
+          let result = log(2.718281828459045);
+          print result > 0.999 and result < 1.001;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return approximately 2.3 for log(10)", () => {
+        const output = run(`
+          let result = log(10);
+          print result > 2.30 and result < 2.31;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'log("hello");',
+          "Argument to 'log' must be a number.",
+        );
+      });
+    });
+
+    describe("log10", () => {
+      it("should return 0 for log10(1)", () => {
+        const output = run("print log10(1);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return 1 for log10(10)", () => {
+        const output = run("print log10(10);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should return 2 for log10(100)", () => {
+        const output = run("print log10(100);");
+        expect(output).toEqual(["2"]);
+      });
+
+      it("should return 3 for log10(1000)", () => {
+        const output = run("print log10(1000);");
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'log10("hello");',
+          "Argument to 'log10' must be a number.",
+        );
+      });
+    });
+
+    describe("log2", () => {
+      it("should return 0 for log2(1)", () => {
+        const output = run("print log2(1);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should return 1 for log2(2)", () => {
+        const output = run("print log2(2);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should return 3 for log2(8)", () => {
+        const output = run("print log2(8);");
+        expect(output).toEqual(["3"]);
+      });
+
+      it("should return 10 for log2(1024)", () => {
+        const output = run("print log2(1024);");
+        expect(output).toEqual(["10"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'log2("hello");',
+          "Argument to 'log2' must be a number.",
+        );
+      });
+    });
+
+    describe("exp", () => {
+      it("should return 1 for exp(0)", () => {
+        const output = run("print exp(0);");
+        expect(output).toEqual(["1"]);
+      });
+
+      it("should return e for exp(1)", () => {
+        const output = run(`
+          let result = exp(1);
+          print result > 2.718 and result < 2.719;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return e^2 for exp(2)", () => {
+        const output = run(`
+          let result = exp(2);
+          print result > 7.38 and result < 7.39;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should handle negative exponents", () => {
+        const output = run(`
+          let result = exp(-1);
+          print result > 0.367 and result < 0.369;
+        `);
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'exp("hello");',
+          "Argument to 'exp' must be a number.",
+        );
+      });
+    });
+
+    describe("char", () => {
+      it("should convert ASCII code to character", () => {
+        const output = run("print char(65);");
+        expect(output).toEqual(["A"]);
+      });
+
+      it("should handle lowercase letters", () => {
+        const output = run("print char(97);");
+        expect(output).toEqual(["a"]);
+      });
+
+      it("should handle space character", () => {
+        const output = run("print char(32);");
+        expect(output).toEqual([" "]);
+      });
+
+      it("should handle digits", () => {
+        const output = run("print char(48);");
+        expect(output).toEqual(["0"]);
+      });
+
+      it("should be inverse of ord", () => {
+        const output = run('print char(ord("Z"));');
+        expect(output).toEqual(["Z"]);
+      });
+
+      it("should error when called with non-number", () => {
+        expectRuntimeError(
+          'char("hello");',
+          "'char' function expects a number",
+        );
+      });
+    });
+
+    describe("upper", () => {
+      it("should convert to uppercase", () => {
+        const output = run('print upper("hello");');
+        expect(output).toEqual(["HELLO"]);
+      });
+
+      it("should handle mixed case", () => {
+        const output = run('print upper("HeLLo WoRLd");');
+        expect(output).toEqual(["HELLO WORLD"]);
+      });
+
+      it("should leave uppercase unchanged", () => {
+        const output = run('print upper("HELLO");');
+        expect(output).toEqual(["HELLO"]);
+      });
+
+      it("should handle empty string", () => {
+        const output = run('print upper("");');
+        expect(output).toEqual([""]);
+      });
+
+      it("should preserve non-alphabetic characters", () => {
+        const output = run('print upper("hello123!");');
+        expect(output).toEqual(["HELLO123!"]);
+      });
+
+      it("should error when called with non-string", () => {
+        expectRuntimeError(
+          "upper(123);",
+          "'upper' function expects a string",
+        );
+      });
+    });
+
+    describe("lower", () => {
+      it("should convert to lowercase", () => {
+        const output = run('print lower("HELLO");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should handle mixed case", () => {
+        const output = run('print lower("HeLLo WoRLd");');
+        expect(output).toEqual(["hello world"]);
+      });
+
+      it("should leave lowercase unchanged", () => {
+        const output = run('print lower("hello");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should handle empty string", () => {
+        const output = run('print lower("");');
+        expect(output).toEqual([""]);
+      });
+
+      it("should preserve non-alphabetic characters", () => {
+        const output = run('print lower("HELLO123!");');
+        expect(output).toEqual(["hello123!"]);
+      });
+
+      it("should error when called with non-string", () => {
+        expectRuntimeError(
+          "lower(123);",
+          "'lower' function expects a string",
+        );
+      });
+    });
+
+    describe("trim", () => {
+      it("should remove leading whitespace", () => {
+        const output = run('print trim("  hello");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should remove trailing whitespace", () => {
+        const output = run('print trim("hello  ");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should remove both leading and trailing whitespace", () => {
+        const output = run('print trim("  hello  ");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should preserve inner whitespace", () => {
+        const output = run('print trim("  hello world  ");');
+        expect(output).toEqual(["hello world"]);
+      });
+
+      it("should handle empty string", () => {
+        const output = run('print trim("");');
+        expect(output).toEqual([""]);
+      });
+
+      it("should handle string with only whitespace", () => {
+        const output = run('print trim("   ");');
+        expect(output).toEqual([""]);
+      });
+
+      it("should handle tabs and newlines", () => {
+        const output = run('print trim("\thello\n");');
+        expect(output).toEqual(["hello"]);
+      });
+
+      it("should error when called with non-string", () => {
+        expectRuntimeError(
+          "trim(123);",
+          "'trim' function expects a string",
+        );
+      });
+    });
+
+    describe("split", () => {
+      it("should split string by separator", () => {
+        const output = run('print split("a,b,c", ",");');
+        expect(output).toEqual(["[a, b, c]"]);
+      });
+
+      it("should split by space", () => {
+        const output = run('print split("hello world", " ");');
+        expect(output).toEqual(["[hello, world]"]);
+      });
+
+      it("should handle empty separator (split each char)", () => {
+        const output = run('print split("abc", "");');
+        expect(output).toEqual(["[a, b, c]"]);
+      });
+
+      it("should return single element array when separator not found", () => {
+        const output = run('print split("hello", ",");');
+        expect(output).toEqual(["[hello]"]);
+      });
+
+      it("should handle empty string", () => {
+        const output = run('print split("", ",");');
+        expect(output).toEqual(["[]"]);
+      });
+
+      it("should handle multi-character separator", () => {
+        const output = run('print split("a::b::c", "::");');
+        expect(output).toEqual(["[a, b, c]"]);
+      });
+
+      it("should create array elements that are strings", () => {
+        const output = run(`
+          let parts = split("1,2,3", ",");
+          print typeof(parts[0]);
+        `);
+        expect(output).toEqual(["string"]);
+      });
+
+      it("should error when first argument is not a string", () => {
+        expectRuntimeError(
+          'split(123, ",");',
+          "'split' function expects a string as the first argument",
+        );
+      });
+
+      it("should error when second argument is not a string", () => {
+        expectRuntimeError(
+          'split("hello", 123);',
+          "'split' function expects a string as the second argument",
+        );
+      });
+    });
+
+    describe("contains", () => {
+      it("should return true when string contains substring", () => {
+        const output = run('print contains("hello world", "world");');
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return false when string does not contain substring", () => {
+        const output = run('print contains("hello world", "foo");');
+        expect(output).toEqual(["false"]);
+      });
+
+      it("should handle empty substring", () => {
+        const output = run('print contains("hello", "");');
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return true when array contains element", () => {
+        const output = run("print contains([1, 2, 3], 2);");
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should return false when array does not contain element", () => {
+        const output = run("print contains([1, 2, 3], 99);");
+        expect(output).toEqual(["false"]);
+      });
+
+      it("should find string in array", () => {
+        const output = run('print contains(["a", "b", "c"], "b");');
+        expect(output).toEqual(["true"]);
+      });
+
+      it("should handle empty array", () => {
+        const output = run("print contains([], 1);");
+        expect(output).toEqual(["false"]);
+      });
+
+      it("should use equality check for arrays", () => {
+        const output = run('print contains([1, "2", 3], 2);');
+        expect(output).toEqual(["false"]);
+      });
+
+      it("should error when first argument is not string or array", () => {
+        expectRuntimeError(
+          "contains(123, 1);",
+          "First argument to 'contains' must be a string or array.",
+        );
+      });
+
+      it("should error when searching string with non-string", () => {
+        expectRuntimeError(
+          'contains("hello", 123);',
+          "Second argument to 'contains' must be a string when the first argument is a string.",
+        );
+      });
+    });
+
+    describe("range", () => {
+      it("should generate range from 0 to n", () => {
+        const output = run("print range(0, 5);");
+        expect(output).toEqual(["[0, 1, 2, 3, 4]"]);
+      });
+
+      it("should generate range from start to end", () => {
+        const output = run("print range(3, 7);");
+        expect(output).toEqual(["[3, 4, 5, 6]"]);
+      });
+
+      it("should return empty array when start equals end", () => {
+        const output = run("print range(5, 5);");
+        expect(output).toEqual(["[]"]);
+      });
+
+      it("should return empty array when start > end", () => {
+        const output = run("print range(10, 5);");
+        expect(output).toEqual(["[]"]);
+      });
+
+      it("should handle negative start", () => {
+        const output = run("print range(-3, 2);");
+        expect(output).toEqual(["[-3, -2, -1, 0, 1]"]);
+      });
+
+      it("should handle negative range", () => {
+        const output = run("print range(-5, -2);");
+        expect(output).toEqual(["[-5, -4, -3]"]);
+      });
+
+      it("should work in for loop", () => {
+        const output = run(`
+          let sum = 0;
+          for (let i = 0; i < len(range(1, 4)); i = i + 1) {
+            sum = sum + range(1, 4)[i];
+          }
+          print sum;
+        `);
+        expect(output).toEqual(["6"]);
+      });
+
+      it("should error when first argument is not a number", () => {
+        expectRuntimeError(
+          'range("0", 5);',
+          "First argument to 'range' must be a number.",
+        );
+      });
+
+      it("should error when second argument is not a number", () => {
+        expectRuntimeError(
+          'range(0, "5");',
+          "Second argument to 'range' must be a number.",
+        );
+      });
+    });
   });
 
   describe("resolution errors", () => {
