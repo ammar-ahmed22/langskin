@@ -232,6 +232,32 @@ print true and false;  // false
 print not true;        // false
 ```
 
+## Standard Library
+
+Langskin includes 21 built-in functions for common operations. Here are a few examples:
+
+```
+// Math
+print max(5, 10);     // 10
+print sqrt(16);       // 4
+print randint(1, 6);  // random 1-6
+
+// Strings
+print len("hello");   // 5
+print substr("hello", 0, 2); // "he"
+
+// Arrays
+let arr = [1, 2, 3];
+push(arr, 4);
+print arr;            // [1, 2, 3, 4]
+
+// Utilities
+print typeof(42);     // "number"
+print index_of([10, 20, 30], 20); // 1
+```
+
+See [docs/stdlib.md](docs/stdlib.md) for the complete reference.
+
 ## API Reference
 
 ### createLangskin(partialSpec?)
