@@ -64,8 +64,8 @@ jobs:
         with:
           version: pnpm changeset version
           publish: pnpm --filter langskin publish:npm 
-          commit: "chore: version packages"
-          title: "chore: version packages"
+          commit: "chore: bump versions and update changelog"
+          title: "Release: publish new versions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
