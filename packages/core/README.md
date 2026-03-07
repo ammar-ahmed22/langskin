@@ -234,7 +234,7 @@ print not true;        // false
 
 ## Standard Library
 
-Langskin includes 21 built-in functions for common operations. Here are a few examples:
+Langskin includes 45 built-in functions for common operations. Here are a few examples:
 
 ```
 // Math
