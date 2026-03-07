@@ -27,11 +27,15 @@
       "require": "./dist/index.cjs"
     }
   },
+  "bin": {
+    "langskin": "./dist/cli.js"
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "tsup --watch",
+    "dev:cli": "tsx src/cli/index.ts",
     "build": "tsup",
     "prepublishOnly": "npm run build",
     "test": "vitest",
@@ -41,7 +45,12 @@
     "bump:major": "npm version major",
     "publish:npm": "npm publish --access public"
   },
+  "devDependencies": {
+    "@commander-js/extra-typings": "^14.0.0",
+    "@types/node": "^25.3.5"
+  },
   "dependencies": {
+    "commander": "^14.0.3",
     "zod": "^4.3.6"
   }
 }
