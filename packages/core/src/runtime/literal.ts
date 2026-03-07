@@ -44,6 +44,10 @@ export class NumberLiteral extends Literal {
   }
 }
 
+export function isNumberLiteral(lit?: Literal): lit is NumberLiteral {
+  return lit instanceof NumberLiteral;
+}
+
 export class StringLiteral extends Literal {
   constructor(public value: string) {
     super();
@@ -52,6 +56,10 @@ export class StringLiteral extends Literal {
   toString(): string {
     return this.value;
   }
+}
+
+export function isStringLiteral(lit?: Literal): lit is StringLiteral {
+  return lit instanceof StringLiteral;
 }
 
 export class BoolLiteral extends Literal {
@@ -64,11 +72,19 @@ export class BoolLiteral extends Literal {
   }
 }
 
+export function isBoolLiteral(lit?: Literal): lit is BoolLiteral {
+  return lit instanceof BoolLiteral;
+}
+
 export class NilLiteral extends Literal {
   value: null = null;
   toString(): string {
     return "nil";
   }
+}
+
+export function isNilLiteral(lit?: Literal): lit is NilLiteral {
+  return lit instanceof NilLiteral;
 }
 
 export class ArrayLiteral extends Literal {
@@ -81,6 +97,10 @@ export class ArrayLiteral extends Literal {
   }
 }
 
+export function isArrayLiteral(lit?: Literal): lit is ArrayLiteral {
+  return lit instanceof ArrayLiteral;
+}
+
 export class CallableLiteral extends Literal {
   constructor(public value: Callable) {
     super();
@@ -91,6 +111,12 @@ export class CallableLiteral extends Literal {
   }
 }
 
+export function isCallableLiteral(
+  lit?: Literal,
+): lit is CallableLiteral {
+  return lit instanceof CallableLiteral;
+}
+
 export class InstanceLiteral extends Literal {
   constructor(public value: LangInstance) {
     super();
@@ -99,4 +125,10 @@ export class InstanceLiteral extends Literal {
   toString(): string {
     return this.value.toString();
   }
+}
+
+export function isInstanceLiteral(
+  lit?: Literal,
+): lit is InstanceLiteral {
+  return lit instanceof InstanceLiteral;
 }

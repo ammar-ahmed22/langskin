@@ -22,6 +22,7 @@ import {
 import { Reporter } from "../reporter/reporter";
 import { LangskinSpec } from "../spec/types";
 import { DEFAULT_SPEC } from "../spec/defaultSpec";
+import { stdlib } from "./std";
 
 export class Interpreter
   implements ExprVisitor<Literal>, StmtVisitor<void>
@@ -38,6 +39,9 @@ export class Interpreter
     spec: LangskinSpec = DEFAULT_SPEC,
   ) {
     this.globals = new Environment();
+    for (const [name, func] of Object.entries(stdlib)) {
+      this.globals.define(name, Literal.callable(func));
+    }
     this.environment = this.globals;
     this.reporter = reporter;
     this.spec = spec;
@@ -137,7 +141,7 @@ export class Interpreter
     return true;
   }
 
-  private isEqual(left: Literal, right: Literal): boolean {
+  public isEqual(left: Literal, right: Literal): boolean {
     // nil is only equal to nil
     if (left instanceof NilLiteral && right instanceof NilLiteral) {
       return true;
