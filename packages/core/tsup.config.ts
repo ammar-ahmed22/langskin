@@ -10,7 +10,7 @@ export default defineConfig([
   },
   {
     entry: { cli: "src/cli/index.ts" },
-    format: ["esm"],
+    format: ["cjs"],
     dts: false,
     clean: false,
     target: "es2020",
