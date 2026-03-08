@@ -1,4 +1,6 @@
 import { Command } from "@commander-js/extra-typings";
+import prettyMs from "pretty-ms";
+import chalk from "chalk";
 import {
   createLangskin,
   createSpec,
@@ -9,66 +11,79 @@ import path from "path";
 import { existsSync, readFileSync } from "fs";
 import { performance } from "perf_hooks";
 
-export type RunResult = {
-  exitCode: number;
-  stdout: string[];
-  stderr: string[];
+export type Output = {
+  type: "stdout" | "stderr";
+  raw: string;
 };
 
+function stdout(line: string): Output {
+  return { type: "stdout", raw: line };
+}
+
+function stderr(line: string): Output {
+  return { type: "stderr", raw: line };
+}
+
+export type RunResult = {
+  exitCode: number;
+  output: Output[];
+};
+
+function exitWithError(message: string): RunResult {
+  return {
+    exitCode: 1,
+    output: [stderr(message)],
+  };
+}
+
 export function executeRun(
-  resolvedFilePath: string,
-  resolvedSpecPath?: string,
+  cwd: string,
+  filePath: string,
+  specPath?: string,
 ): RunResult {
+  const resolvedFilePath = path.resolve(cwd, filePath);
+  const resolvedSpecPath = specPath
+    ? path.resolve(cwd, specPath)
+    : undefined;
   if (!existsSync(resolvedFilePath)) {
-    return {
-      exitCode: 1,
-      stdout: [],
-      stderr: [
-        `Cannot open file ${resolvedFilePath}: File does not exist`,
-      ],
-    };
+    return exitWithError(
+      `Cannot open file ${filePath}: File does not exist`,
+    );
   }
 
   const code = readFileSync(resolvedFilePath, "utf-8");
   let spec = createSpec();
-  const stdout: string[] = [];
+  const output: Output[] = [];
 
   if (resolvedSpecPath !== undefined) {
     if (!existsSync(resolvedSpecPath)) {
-      return {
-        exitCode: 1,
-        stdout: [],
-        stderr: [
-          `Cannot open file ${resolvedSpecPath}: File does not exist`,
-        ],
-      };
+      return exitWithError(
+        `Cannot open file ${specPath}: File does not exist`,
+      );
     }
 
     const specContent = readFileSync(resolvedSpecPath, "utf-8");
     let parsedPartialSpec: unknown;
     try {
       parsedPartialSpec = JSON.parse(specContent);
-    } catch {
-      return {
-        exitCode: 1,
-        stdout: [],
-        stderr: [`'${resolvedSpecPath}' is not valid JSON`],
-      };
+    } catch (e) {
+      return exitWithError(
+        `'${specPath}' is not valid JSON: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
 
     const validation = validatePartialSpec(parsedPartialSpec);
     if (!validation.valid) {
       return {
         exitCode: 1,
-        stdout: [],
-        stderr: [
-          `'${resolvedSpecPath}' is not a valid spec:`,
-          ...validation.errors.map((e) => `  ${e}`),
+        output: [
+          stderr(`'${resolvedSpecPath}' is not a valid spec:`),
+          ...validation.errors.map((e) => stderr(`  ${e}`)),
         ],
       };
     }
 
-    stdout.push(`Using spec from ${resolvedSpecPath}`);
+    output.push(stderr(chalk.blue(`Using spec from ${specPath}`)));
     spec = createSpec(parsedPartialSpec as PartialLangskinSpec);
   }
 
@@ -78,20 +93,20 @@ export function executeRun(
   const end = performance.now();
 
   if (reporter.succeeded()) {
+    output.push(...reporter.getOutput().map((l) => stdout(l)));
+    output.push(
+      stderr(
+        chalk.green(`\u2713 Finished in ${prettyMs(end - start)}`),
+      ),
+    );
     return {
       exitCode: 0,
-      stdout: [
-        ...stdout,
-        ...reporter.getOutput(),
-        `Finished in ${(end - start).toFixed(2)}ms`,
-      ],
-      stderr: [],
+      output,
     };
   } else {
     return {
       exitCode: 1,
-      stdout: [],
-      stderr: reporter.formattedErrors(),
+      output: reporter.formattedErrors().map((l) => stderr(l)),
     };
   }
 }
@@ -105,12 +120,13 @@ export const runCommand = new Command("run")
   )
   .action((file, options) => {
     const cwd = process.cwd();
-    const resolvedPath = path.resolve(cwd, file);
-    const resolvedSpecPath = options.spec
-      ? path.resolve(cwd, options.spec)
-      : undefined;
-    const result = executeRun(resolvedPath, resolvedSpecPath);
-    result.stdout.forEach((l) => console.log(l));
-    result.stderr.forEach((l) => console.error(l));
+    const result = executeRun(cwd, file, options.spec);
+    result.output.forEach((o) => {
+      if (o.type === "stdout") {
+        console.log(o.raw);
+      } else {
+        console.error(o.raw);
+      }
+    });
     process.exit(result.exitCode);
   });
