@@ -1,5 +1,26 @@
 # langskin
 
+## 0.3.0
+
+### Minor Changes
+
+- 7e30aaf: Add a CLI for running `.ls` files directly.
+  - New `langskin run <file>` command executes a langskin source file and exits with code 0 on success, 1 on failure
+  - `--spec <file>` / `-s` flag accepts a JSON keyword map to run with custom keywords
+  - Program output is written to stdout; info messages (spec path, timing) and errors are written to stderr
+  - Example `.ls` files added to `test/fixtures/` (`hello.ls`, `fibonacci.ls`, `counter_class.ls`, `spanish.ls` + `spanish_spec.json`)
+
+- 3f26a56: Add `validatePartialSpec` function to the public API.
+
+  `validatePartialSpec(spec: unknown): ValidationResult` validates an unknown value against the partial spec type — all keywords are optional, but any provided values must be valid identifiers and unique within the supplied set. Error messages follow the same formatting conventions as `validateSpec`.
+
+  Also migrates `validateSpec` internals to Zod (via a new `specSchema` and `partialSpecSchema` in `src/spec/schema.ts`), replacing the previous manual validation logic. External behaviour and error messages are preserved.
+
+### Patch Changes
+
+- 37a6b6e: Fix `validateSpec` and `validatePartialSpec` to invalidate if 'keywords' contains invalid keys
+- db87cce: Fix `validatePartialSpec` allow objects without the 'keywords' property
+
 ## 0.2.0
 
 ### Minor Changes
