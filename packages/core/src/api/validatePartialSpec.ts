@@ -42,10 +42,12 @@ function formatIssue(
     return "Spec must be an object";
   }
 
-  // keywords field present but wrong type
+  // keywords field missing or wrong type
   if (path.length === 1 && path[0] === "keywords") {
     if (issue.code === "invalid_type") {
-      return "'keywords' must be an object";
+      return issue.message.includes("undefined")
+        ? "Spec must have a 'keywords' property"
+        : "'keywords' must be an object";
     }
   }
 

@@ -67,7 +67,7 @@ export const specSchema = z
 
 /** Zod schema for a partial spec (all keywords optional) */
 export const partialSpecSchema = z.object({
-  keywords: keywordsSchema.partial().optional(),
+  keywords: keywordsSchema.partial(),
 });
 
 /** Inferred TypeScript types */

@@ -3,13 +3,6 @@ import { validatePartialSpec } from "../src/api/validatePartialSpec";
 
 describe("validatePartialSpec", () => {
   describe("valid specs", () => {
-    it("should accept an empty object", () => {
-      const result = validatePartialSpec({});
-
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
-    });
-
     it("should accept an object with an empty keywords map", () => {
       const result = validatePartialSpec({ keywords: {} });
 
@@ -18,7 +11,9 @@ describe("validatePartialSpec", () => {
     });
 
     it("should accept a single keyword override", () => {
-      const result = validatePartialSpec({ keywords: { var: "variable" } });
+      const result = validatePartialSpec({
+        keywords: { var: "variable" },
+      });
 
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -93,6 +88,34 @@ describe("validatePartialSpec", () => {
   });
 
   describe("invalid specs", () => {
+    it("should reject an object without a keywords key", () => {
+      const result = validatePartialSpec({});
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain(
+        "Spec must have a 'keywords' property",
+      );
+    });
+
+    it("should reject an object with unrelated keys but no keywords key", () => {
+      const result = validatePartialSpec({ name: "Ammar" });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain(
+        "Spec must have a 'keywords' property",
+      );
+    });
+
+    it("should accept an object with extra keys alongside keywords", () => {
+      const result = validatePartialSpec({
+        keywords: {},
+        name: "Ammar",
+      });
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
     it("should reject non-object input", () => {
       expect(validatePartialSpec(null).valid).toBe(false);
       expect(validatePartialSpec(undefined).valid).toBe(false);
@@ -108,7 +131,9 @@ describe("validatePartialSpec", () => {
     });
 
     it("should reject spec with non-object keywords", () => {
-      const result = validatePartialSpec({ keywords: "not-an-object" });
+      const result = validatePartialSpec({
+        keywords: "not-an-object",
+      });
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContain("'keywords' must be an object");
@@ -118,32 +143,42 @@ describe("validatePartialSpec", () => {
       const result = validatePartialSpec({ keywords: { var: 123 } });
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0]).toContain("Keyword 'var' must be a string");
+      expect(result.errors[0]).toContain(
+        "Keyword 'var' must be a string",
+      );
     });
 
     it("should reject empty keyword value", () => {
       const result = validatePartialSpec({ keywords: { var: "" } });
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0]).toContain("Keyword 'var' cannot be empty");
+      expect(result.errors[0]).toContain(
+        "Keyword 'var' cannot be empty",
+      );
     });
 
     it("should reject keyword starting with a number", () => {
-      const result = validatePartialSpec({ keywords: { var: "123var" } });
+      const result = validatePartialSpec({
+        keywords: { var: "123var" },
+      });
 
       expect(result.valid).toBe(false);
       expect(result.errors[0]).toContain("not a valid identifier");
     });
 
     it("should reject keyword value with special characters", () => {
-      const result = validatePartialSpec({ keywords: { var: "my-var" } });
+      const result = validatePartialSpec({
+        keywords: { var: "my-var" },
+      });
 
       expect(result.valid).toBe(false);
       expect(result.errors[0]).toContain("not a valid identifier");
     });
 
     it("should reject keyword value with spaces", () => {
-      const result = validatePartialSpec({ keywords: { var: "my var" } });
+      const result = validatePartialSpec({
+        keywords: { var: "my var" },
+      });
 
       expect(result.valid).toBe(false);
       expect(result.errors[0]).toContain("not a valid identifier");
@@ -161,7 +196,9 @@ describe("validatePartialSpec", () => {
 
     it("should not require keywords that are absent", () => {
       // Omitting most keywords is fine — they are optional in a partial spec
-      const result = validatePartialSpec({ keywords: { var: "variable" } });
+      const result = validatePartialSpec({
+        keywords: { var: "variable" },
+      });
 
       expect(result.valid).toBe(true);
     });
