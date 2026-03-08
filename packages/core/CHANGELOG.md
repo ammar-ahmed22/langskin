@@ -1,5 +1,11 @@
 # langskin
 
+## 0.3.1
+
+### Patch Changes
+
+- 5017dd3: Fixed CLI not working due to being compiled to ESM instead of CJS
+
 ## 0.3.0
 
 ### Minor Changes
