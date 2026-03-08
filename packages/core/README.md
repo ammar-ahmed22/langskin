@@ -32,6 +32,55 @@ console.log(result.getOutput()); // ["Hello, World!"]
 console.log(result.succeeded()); // true
 ```
 
+## CLI
+
+Langskin ships with a CLI for running `.ls` (specific file extension not necessary, can be any text file) files directly.
+
+```bash
+langskin [command] [options]
+```
+
+### Global Options
+
+| Option | Description |
+|--------|-------------|
+| `-V, --version` | Print the installed version |
+| `-h, --help` | Display help |
+
+### Commands
+
+#### `run <file>`
+
+Run a langskin file.
+
+```bash
+langskin run <file> [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `-s, --spec <file>` | Path to a JSON spec file to run with custom keywords (same format as `createLangskin()`) |
+| `-h, --help` | Display help for the run command |
+
+**Examples:**
+
+```bash
+# Run a file with default keywords
+langskin run hello.ls
+
+# Run a file with a custom keyword spec
+langskin run program.ls -s my-spec.json
+```
+
+The `test/fixtures/` directory has ready-to-run examples you can try right after cloning:
+
+```bash
+langskin run test/fixtures/hello.ls
+langskin run test/fixtures/fibonacci.ls
+langskin run test/fixtures/counter_class.ls
+langskin run test/fixtures/spanish.ls -s test/fixtures/spanish_spec.json
+```
+
 ## Custom Keywords
 
 The main feature of langskin is the ability to customize all language keywords. Pass a partial spec to `createLangskin()` and only override what you need:
