@@ -4,3 +4,5 @@ coverage
 dist
 *.tgz
 .agents
+*.langskin
+packages/core/test/langskin
