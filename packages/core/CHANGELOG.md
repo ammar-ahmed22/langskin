@@ -1,5 +1,11 @@
 # langskin
 
+## 0.3.2
+
+### Patch Changes
+
+- 31a43c8: Fix CLI failing due to 'pretty-esm' and 'chalk' being ESM packages with defaults. Updated to have no external dependencies in CLI build (all bundled)
+
 ## 0.3.1
 
 ### Patch Changes
