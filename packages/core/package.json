@@ -28,7 +28,7 @@
     }
   },
   "bin": {
-    "langskin": "./dist/cli.js"
+    "langskin": "./dist/cli.cjs"
   },
   "files": [
     "dist"
