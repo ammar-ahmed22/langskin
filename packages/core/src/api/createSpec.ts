@@ -19,7 +19,7 @@ export function createSpec(
   }
 
   // Merge partial keywords with defaults
-  const mergedSpec: LangskinSpec = {
+  const mergedSpec: unknown = {
     keywords: {
       ...DEFAULT_SPEC.keywords,
       ...partial.keywords,
@@ -34,5 +34,5 @@ export function createSpec(
     );
   }
 
-  return mergedSpec;
+  return mergedSpec as LangskinSpec;
 }

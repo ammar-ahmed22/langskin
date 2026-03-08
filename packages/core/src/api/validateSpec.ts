@@ -1,110 +1,76 @@
-import { KeywordName, ValidationResult } from "../spec/types";
+import * as z from "zod";
+import { specSchema } from "../spec/schema";
+import { ValidationResult } from "../spec/types";
 
-/** All valid keyword names for validation */
-const KEYWORD_NAMES: KeywordName[] = [
-  "and",
-  "or",
-  "not",
-  "if",
-  "else",
-  "elif",
-  "for",
-  "while",
-  "break",
-  "continue",
-  "fun",
-  "return",
-  "class",
-  "inherits",
-  "super",
-  "this",
-  "var",
-  "true",
-  "false",
-  "nil",
-  "print",
-  "init",
-];
+/**
+ * Formats a single ZodIssue into a human-readable error string.
+ * Preserves the message patterns callers expect.
+ */
+function formatIssue(
+  issue: z.core.$ZodIssue,
+  input: unknown,
+): string {
+  const path = issue.path;
 
-/** Valid identifier pattern: starts with letter/underscore, alphanumeric/underscore after */
-const IDENTIFIER_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+  // Top-level type error: spec is not an object
+  if (path.length === 0) {
+    return "Spec must be an object";
+  }
+
+  // keywords field missing or wrong type
+  if (path.length === 1 && path[0] === "keywords") {
+    if (issue.code === "invalid_type") {
+      return issue.message.includes("undefined")
+        ? "Spec must have a 'keywords' property"
+        : "'keywords' must be an object";
+    }
+  }
+
+  // Individual keyword errors: path = ['keywords', '<name>']
+  if (path.length === 2 && path[0] === "keywords") {
+    const name = path[1];
+
+    if (issue.code === "invalid_type") {
+      if (issue.message.includes("undefined")) {
+        return `Missing keyword: '${String(name)}'`;
+      }
+      const received =
+        issue.message.match(/received (\w+)/)?.[1] ?? "unknown";
+      return `Keyword '${String(name)}' must be a string, got ${received}`;
+    }
+
+    // invalid_format = regex failure — include the actual value for clarity
+    if (issue.code === "invalid_format") {
+      const keywords = (input as Record<string, unknown> | null)
+        ?.keywords;
+      const value = (keywords as Record<string, unknown> | null)?.[
+        String(name)
+      ];
+      return `Keyword '${String(name)}' value '${String(value)}' is not a valid identifier (must start with letter/underscore, contain only alphanumeric/underscore)`;
+    }
+
+    // too_small ("cannot be empty") or custom (duplicate — already fully formatted)
+    return issue.code === "custom"
+      ? issue.message
+      : `Keyword '${String(name)}' ${issue.message}`;
+  }
+
+  return issue.message;
+}
 
 /**
  * Validates a complete LangskinSpec.
  * Checks that all keyword values are valid identifiers and unique.
  */
 export function validateSpec(spec: unknown): ValidationResult {
-  const errors: string[] = [];
-
-  // Type validation: must be an object
-  if (typeof spec !== "object" || spec === null) {
-    return { valid: false, errors: ["Spec must be an object"] };
+  const result = specSchema.safeParse(spec);
+  if (result.success) {
+    return { valid: true, errors: [] };
   }
-
-  const specObj = spec as Record<string, unknown>;
-
-  // Must have keywords property
-  if (!("keywords" in specObj)) {
-    return {
-      valid: false,
-      errors: ["Spec must have a 'keywords' property"],
-    };
-  }
-
-  if (
-    typeof specObj.keywords !== "object" ||
-    specObj.keywords === null
-  ) {
-    return { valid: false, errors: ["'keywords' must be an object"] };
-  }
-
-  const keywords = specObj.keywords as Record<string, unknown>;
-  const seenValues = new Map<string, string>(); // value -> keyword name
-
-  // Check each keyword
-  for (const name of KEYWORD_NAMES) {
-    const value = keywords[name];
-
-    // Must be present
-    if (value === undefined) {
-      errors.push(`Missing keyword: '${name}'`);
-      continue;
-    }
-
-    // Must be a string
-    if (typeof value !== "string") {
-      errors.push(
-        `Keyword '${name}' must be a string, got ${typeof value}`,
-      );
-      continue;
-    }
-
-    // Cannot be empty
-    if (value === "") {
-      errors.push(`Keyword '${name}' cannot be empty`);
-      continue;
-    }
-
-    // Must be a valid identifier
-    if (!IDENTIFIER_PATTERN.test(value)) {
-      errors.push(
-        `Keyword '${name}' value '${value}' is not a valid identifier (must start with letter/underscore, contain only alphanumeric/underscore)`,
-      );
-      continue;
-    }
-
-    // Check for duplicates
-    if (seenValues.has(value)) {
-      errors.push(
-        `Duplicate keyword value '${value}' used by both '${seenValues.get(value)}' and '${name}'`,
-      );
-    } else {
-      seenValues.set(value, name);
-    }
-  }
-
   return {
-    valid: errors.length === 0,
-    errors,
+    valid: false,
+    errors: result.error.issues.map((issue) =>
+      formatIssue(issue, spec),
+    ),
   };
 }
