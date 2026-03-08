@@ -49,7 +49,7 @@ const keywordsSchema = z.object(
 
 /** Zod schema for a complete LangskinSpec, including uniqueness check */
 export const specSchema = z
-  .object({ keywords: keywordsSchema })
+  .object({ keywords: keywordsSchema.strict() })
   .superRefine((spec, ctx) => {
     const seenValues = new Map<string, string>(); // value -> keyword name
     for (const [name, value] of Object.entries(spec.keywords)) {
@@ -67,7 +67,7 @@ export const specSchema = z
 
 /** Zod schema for a partial spec (all keywords optional) */
 export const partialSpecSchema = z.object({
-  keywords: keywordsSchema.partial(),
+  keywords: keywordsSchema.partial().strict(),
 });
 
 /** Inferred TypeScript types */

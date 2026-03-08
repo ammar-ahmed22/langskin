@@ -203,6 +203,30 @@ describe("validatePartialSpec", () => {
       expect(result.valid).toBe(true);
     });
 
+    it("should reject unknown keyword names", () => {
+      const result = validatePartialSpec({
+        keywords: { nonexistent: "value" },
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain(
+        "Unknown keyword(s) in 'keywords'",
+      );
+      expect(result.errors[0]).toContain("'nonexistent'");
+    });
+
+    it("should reject a mix of valid and unknown keyword names", () => {
+      const result = validatePartialSpec({
+        keywords: { var: "variable", nonexistent: "value" },
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain(
+        "Unknown keyword(s) in 'keywords'",
+      );
+      expect(result.errors[0]).toContain("'nonexistent'");
+    });
+
     it("should collect multiple errors", () => {
       const result = validatePartialSpec({
         keywords: {

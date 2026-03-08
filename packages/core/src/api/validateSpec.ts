@@ -17,12 +17,18 @@ function formatIssue(
     return "Spec must be an object";
   }
 
-  // keywords field missing or wrong type
+  // keywords field missing, wrong type, or contains unknown keys
   if (path.length === 1 && path[0] === "keywords") {
     if (issue.code === "invalid_type") {
       return issue.message.includes("undefined")
         ? "Spec must have a 'keywords' property"
         : "'keywords' must be an object";
+    }
+    if (issue.code === "unrecognized_keys") {
+      const keys = (issue as z.core.$ZodIssue & { keys: string[] })
+        .keys;
+      const quoted = keys.map((k) => `'${k}'`).join(", ");
+      return `Unknown keyword(s) in 'keywords': ${quoted}`;
     }
   }
 
