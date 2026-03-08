@@ -196,6 +196,38 @@ describe("validateSpec", () => {
       expect(result.errors[0]).toContain("'keyword'");
     });
 
+    it("should reject unknown keyword names", () => {
+      const result = validateSpec({
+        ...DEFAULT_SPEC,
+        keywords: {
+          ...DEFAULT_SPEC.keywords,
+          nonexistent: "value",
+        },
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain(
+        "Unknown keyword(s) in 'keywords'",
+      );
+      expect(result.errors[0]).toContain("'nonexistent'");
+    });
+
+    it("should reject multiple unknown keyword names", () => {
+      const result = validateSpec({
+        ...DEFAULT_SPEC,
+        keywords: {
+          ...DEFAULT_SPEC.keywords,
+          foo: "bar",
+          baz: "qux",
+        },
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain(
+        "Unknown keyword(s) in 'keywords'",
+      );
+    });
+
     it("should collect multiple errors", () => {
       const spec = {
         ...DEFAULT_SPEC,
