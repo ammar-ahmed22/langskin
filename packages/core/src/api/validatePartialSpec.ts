@@ -1,10 +1,35 @@
 import * as z from "zod";
-import { specSchema } from "../spec/schema";
+import { partialSpecSchema } from "../spec/schema";
 import { ValidationResult } from "../spec/types";
 
 /**
+ * Extends the partial spec schema with a uniqueness check across provided keyword values.
+ * Only keywords explicitly provided are checked — omitted keywords are ignored.
+ */
+const partialSpecWithUniquenessSchema = partialSpecSchema.superRefine(
+  (spec, ctx) => {
+    if (!spec.keywords) return;
+
+    const seenValues = new Map<string, string>(); // value -> keyword name
+    for (const [name, value] of Object.entries(spec.keywords)) {
+      if (value === undefined) continue;
+      if (seenValues.has(value)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Duplicate keyword value '${value}' used by both '${seenValues.get(value)}' and '${name}'`,
+          path: ["keywords", name],
+        });
+      } else {
+        seenValues.set(value, name);
+      }
+    }
+  },
+);
+
+/**
  * Formats a single ZodIssue into a human-readable error string.
- * Preserves the message patterns callers expect.
+ * Mirrors the formatting of validateSpec, omitting branches that cannot
+ * occur with a partial spec (keywords missing, individual keywords missing).
  */
 function formatIssue(
   issue: z.core.$ZodIssue,
@@ -17,12 +42,10 @@ function formatIssue(
     return "Spec must be an object";
   }
 
-  // keywords field missing or wrong type
+  // keywords field present but wrong type
   if (path.length === 1 && path[0] === "keywords") {
     if (issue.code === "invalid_type") {
-      return issue.message.includes("undefined")
-        ? "Spec must have a 'keywords' property"
-        : "'keywords' must be an object";
+      return "'keywords' must be an object";
     }
   }
 
@@ -31,9 +54,6 @@ function formatIssue(
     const name = path[1];
 
     if (issue.code === "invalid_type") {
-      if (issue.message.includes("undefined")) {
-        return `Missing keyword: '${String(name)}'`;
-      }
       const received =
         issue.message.match(/received (\w+)/)?.[1] ?? "unknown";
       return `Keyword '${String(name)}' must be a string, got ${received}`;
@@ -59,11 +79,12 @@ function formatIssue(
 }
 
 /**
- * Validates a complete LangskinSpec.
- * Checks that all keyword values are valid identifiers and unique.
+ * Validates a partial LangskinSpec.
+ * All keywords are optional, but any provided keyword values must be valid
+ * identifiers and unique across the provided set.
  */
-export function validateSpec(spec: unknown): ValidationResult {
-  const result = specSchema.safeParse(spec);
+export function validatePartialSpec(spec: unknown): ValidationResult {
+  const result = partialSpecWithUniquenessSchema.safeParse(spec);
   if (result.success) {
     return { valid: true, errors: [] };
   }

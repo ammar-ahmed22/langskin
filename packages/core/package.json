@@ -40,5 +40,8 @@
     "bump:minor": "npm version minor",
     "bump:major": "npm version major",
     "publish:npm": "npm publish --access public"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
   }
 }
