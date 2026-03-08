@@ -52,6 +52,30 @@ spanish.run(`
 
 See the [full documentation](./packages/core/README.md) for all language features, API reference, and the complete list of customizable keywords.
 
+## CLI
+
+Langskin ships with a CLI you can run instantly with `npx`—no install required.
+
+**Hello World in one shot:**
+
+```bash
+echo 'print "Hello, World!";' > hello.ls
+npx langskin run hello.ls
+```
+
+**After cloning**, run the bundled example files from `packages/core/`:
+
+```bash
+npx langskin run test/fixtures/hello.ls
+npx langskin run test/fixtures/fibonacci.ls
+npx langskin run test/fixtures/counter_class.ls
+
+# Custom keywords via a JSON spec
+npx langskin run test/fixtures/spanish.ls -s test/fixtures/spanish_spec.json
+```
+
+See the [CLI documentation](./packages/core/README.md#cli) for all commands and options.
+
 ## Packages
 
 This is a monorepo containing:
