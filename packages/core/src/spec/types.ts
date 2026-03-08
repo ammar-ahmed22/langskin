@@ -1,4 +1,8 @@
-export type { KeywordName, LangskinSpec, PartialLangskinSpec } from "./schema";
+export type {
+  KeywordName,
+  LangskinSpec,
+  PartialLangskinSpec,
+} from "./schema";
 
 /**
  * Result of spec validation.

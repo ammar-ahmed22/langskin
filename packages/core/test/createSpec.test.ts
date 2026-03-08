@@ -72,7 +72,7 @@ describe("createSpec", () => {
     });
 
     it("should handle empty partial spec", () => {
-      const spec = createSpec({});
+      const spec = createSpec({ keywords: {} });
 
       expect(spec).toEqual(DEFAULT_SPEC);
     });
