@@ -56,6 +56,12 @@ See the [full documentation](./packages/core/README.md) for all language feature
 
 Langskin ships with a CLI you can run instantly with `npx`—no install required.
 
+**Try the language interactively:**
+
+```bash
+npx langskin repl
+```
+
 **Hello World in one shot:**
 
 ```bash
