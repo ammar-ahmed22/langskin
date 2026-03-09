@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createLangskin } from "../src/api/createLangskin";
-import { ErrorPhase } from "../src/errors/types";
+import { createLangskin } from "@langskin/api/createLangskin";
+import { ErrorPhase } from "@langskin/errors/types";
 
 describe("createLangskin", () => {
   describe("default spec", () => {

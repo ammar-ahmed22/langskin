@@ -1,7 +1,7 @@
 import { Command } from "@commander-js/extra-typings";
 import prettyMs from "pretty-ms";
 import chalk from "chalk";
-import { createLangskin } from "../../";
+import { createLangskin } from "@langskin";
 import {
   Output,
   stdout,

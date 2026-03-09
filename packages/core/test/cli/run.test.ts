@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { existsSync, readFileSync } from "fs";
-import { executeRun } from "../../src/cli/commands/run";
+import { executeRun } from "@cli/commands/run";
 
 vi.mock("fs");
 

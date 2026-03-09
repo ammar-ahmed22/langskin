@@ -1,6 +1,6 @@
-import pkg from "../../../../../package.json" assert { type: "json" };
+import pkg from "@core/package.json" assert { type: "json" };
 import readline from "readline";
-import { LangskinSession } from "../../../../";
+import { LangskinSession } from "@langskin";
 import chalk from "chalk";
 import { writeFileSync } from "fs";
 import { BlockBuffer } from "./blockBuffer";

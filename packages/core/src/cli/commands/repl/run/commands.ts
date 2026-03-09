@@ -1,5 +1,5 @@
 import readline from "readline";
-import { LangskinSession } from "../../../../";
+import { LangskinSession } from "@langskin";
 
 function col(
   val: string,

@@ -1,6 +1,6 @@
-import { Reporter } from "../src/reporter/reporter";
-import { LangError } from "../src/errors/error";
-import { ErrorPhase, LangErrorProps } from "../src/errors/types";
+import { Reporter } from "@langskin/reporter/reporter";
+import { LangError } from "@langskin/errors/error";
+import { ErrorPhase, LangErrorProps } from "@langskin/errors/types";
 import { describe, it, expect, vi } from "vitest";
 
 describe("Reporter", () => {
@@ -24,7 +24,7 @@ describe("Reporter", () => {
 
       expect(reporter.hasErrors()).toBe(true);
       expect(reporter.getErrors()).toHaveLength(1);
-      const error = reporter.getErrors()[0];
+      const error = reporter.getErrors()[0]!;
       expect(error.phase).toBe(props.phase);
       expect(error.message).toBe(props.message);
       expect(error.line).toBe(props.line);
@@ -125,7 +125,7 @@ describe("Reporter", () => {
       reporter.report(props);
 
       expect(callback).toHaveBeenCalledTimes(1);
-      const calledWith = callback.mock.calls[0][0] as LangError;
+      const calledWith = callback.mock.calls[0]![0] as LangError;
       expect(calledWith.phase).toBe(props.phase);
       expect(calledWith.message).toBe(props.message);
     });

@@ -1,8 +1,8 @@
 import { CommandResult } from ".";
 import path from "path";
 import { existsSync, readFileSync } from "fs";
-import { PartialLangskinSpec } from "../../spec/schema";
-import { validatePartialSpec } from "../../api/validatePartialSpec";
+import { PartialLangskinSpec } from "@langskin";
+import { validatePartialSpec } from "@langskin";
 
 export type ReadFileResult = [CommandResult, string];
 export function readFile(

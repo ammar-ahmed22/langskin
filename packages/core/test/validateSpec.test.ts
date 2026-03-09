@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { validateSpec } from "../src/api/validateSpec";
-import { DEFAULT_SPEC } from "../src/spec/defaultSpec";
+import { validateSpec } from "@langskin";
+import { DEFAULT_SPEC } from "@langskin/spec/defaultSpec";
 
 describe("validateSpec", () => {
   describe("valid specs", () => {

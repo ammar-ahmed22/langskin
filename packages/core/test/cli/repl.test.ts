@@ -7,9 +7,9 @@ import {
   afterEach,
 } from "vitest";
 import { existsSync, readFileSync } from "fs";
-import { executeReplSetup } from "../../src/cli/commands/repl/setup";
-import { runRepl } from "../../src/cli/commands/repl/run";
-import { createLangskin } from "../../src/";
+import { executeReplSetup } from "@cli/commands/repl/setup";
+import { runRepl } from "@cli/commands/repl/run";
+import { createLangskin } from "@langskin";
 import readline from "readline";
 
 vi.mock("fs");

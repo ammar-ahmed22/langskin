@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createSpec } from "../src/api/createSpec";
-import { DEFAULT_SPEC } from "../src/spec/defaultSpec";
+import { createSpec } from "@langskin/api/createSpec";
+import { DEFAULT_SPEC } from "@langskin/spec/defaultSpec";
 
 describe("createSpec", () => {
   describe("without partial spec", () => {

@@ -1,6 +1,6 @@
-import { LangskinSession, createLangskin } from "../../../";
-import { CommandResult, stderr } from "../../utils";
-import { readSpecFile } from "../../utils/file";
+import { LangskinSession, createLangskin } from "@langskin";
+import { CommandResult, stderr } from "@cli/utils";
+import { readSpecFile } from "@cli/utils/file";
 import chalk from "chalk";
 
 export type ReplSetupResult =

@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { Lexer } from "../src/lex/lexer";
-import { Parser } from "../src/parse/parser";
-import { Resolver } from "../src/runtime/resolver";
-import { Interpreter } from "../src/runtime/interpreter";
-import { Reporter } from "../src/reporter/reporter";
-import { LangError } from "../src/errors/error";
-import { ErrorPhase } from "../src/errors/types";
+import { Lexer } from "@langskin/lex/lexer";
+import { Parser } from "@langskin/parse/parser";
+import { Resolver } from "@langskin/runtime/resolver";
+import { Interpreter } from "@langskin/runtime/interpreter";
+import { Reporter } from "@langskin/reporter/reporter";
+import { LangError } from "@langskin/errors/error";
+import { ErrorPhase } from "@langskin/errors/types";
 
 function run(source: string): string[] {
   const reporter = new Reporter();
