@@ -36,6 +36,7 @@
   "scripts": {
     "dev": "tsup --watch",
     "dev:cli": "tsx src/cli/index.ts",
+    "start:cli": "pnpm run build && node dist/cli.cjs",
     "build": "tsup",
     "prepublishOnly": "npm run build",
     "test": "vitest",
@@ -47,7 +48,8 @@
   },
   "devDependencies": {
     "@commander-js/extra-typings": "^14.0.0",
-    "@types/node": "^25.3.5"
+    "@types/node": "^25.3.5",
+    "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
     "chalk": "^5.6.2",

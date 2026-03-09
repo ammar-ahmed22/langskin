@@ -1,12 +1,12 @@
-import { Lexer } from "../src/lex/lexer";
-import { Reporter } from "../src/reporter/reporter";
-import { LangError } from "../src/errors/error";
-import { ErrorPhase } from "../src/errors/types";
-import { Parser } from "../src/parse/parser";
-import { Expr, Stmt } from "../src/ast";
+import { Lexer } from "@langskin/lex/lexer";
+import { Reporter } from "@langskin/reporter/reporter";
+import { LangError } from "@langskin/errors/error";
+import { ErrorPhase } from "@langskin/errors/types";
+import { Parser } from "@langskin/parse/parser";
+import { Expr, Stmt } from "@langskin/ast";
 import { describe, it, expect } from "vitest";
-import { TokenType } from "../src/lex/token";
-import { NilLiteral } from "../src/runtime/literal";
+import { TokenType } from "@langskin/lex/token";
+import { NilLiteral } from "@langskin/runtime/literal";
 
 function parse(source: string): Stmt.Statement[] {
   const reporter = new Reporter();

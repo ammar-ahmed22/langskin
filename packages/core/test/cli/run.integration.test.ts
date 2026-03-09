@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { fileURLToPath } from "url";
-import { executeRun, RunResult } from "../../src/cli/commands/run";
+import { executeRun } from "@cli/commands/run";
 
 const fixturesDir = fileURLToPath(
   new URL("../fixtures", import.meta.url),
@@ -10,27 +10,15 @@ function fixture(name: string): string {
   return name;
 }
 
-function stdout(result: RunResult): string[] {
-  return result.output
-    .filter((o) => o.type === "stdout")
-    .map((o) => o.raw);
-}
-
-function stderr(result: RunResult): string[] {
-  return result.output
-    .filter((o) => o.type === "stderr")
-    .map((o) => o.raw);
-}
-
 describe("executeRun (integration)", () => {
   describe("success cases", () => {
     it("should run hello.ls and print Hello, World!", () => {
       const result = executeRun(fixturesDir, fixture("hello.ls"));
 
       expect(result.exitCode).toBe(0);
-      expect(stdout(result)).toContain("Hello, World!");
+      expect(result.getStdout()).toContain("Hello, World!");
       expect(
-        stderr(result).some((l) => l.includes("Finished in")),
+        result.getStderr().some((l) => l.includes("Finished in")),
       ).toBe(true);
     });
 
@@ -38,7 +26,7 @@ describe("executeRun (integration)", () => {
       const result = executeRun(fixturesDir, fixture("fibonacci.ls"));
 
       expect(result.exitCode).toBe(0);
-      expect(stdout(result)).toEqual(
+      expect(result.getStdout()).toEqual(
         expect.arrayContaining([
           "0",
           "1",
@@ -59,7 +47,7 @@ describe("executeRun (integration)", () => {
       );
 
       expect(result.exitCode).toBe(0);
-      expect(stdout(result)).toContain("3");
+      expect(result.getStdout()).toContain("3");
     });
   });
 
@@ -72,9 +60,11 @@ describe("executeRun (integration)", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        stderr(result).some((l) => l.includes("Division by zero")),
+        result
+          .getStderr()
+          .some((l) => l.includes("Division by zero")),
       ).toBe(true);
-      expect(stdout(result)).toEqual([]);
+      expect(result.getStdout()).toEqual([]);
     });
 
     it("should run syntax_error.ls and return exitCode 1 with a syntax error", () => {
@@ -85,9 +75,9 @@ describe("executeRun (integration)", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        stderr(result).some((l) => l.includes("Expect ';'")),
+        result.getStderr().some((l) => l.includes("Expect ';'")),
       ).toBe(true);
-      expect(stdout(result)).toEqual([]);
+      expect(result.getStdout()).toEqual([]);
     });
   });
 
@@ -101,10 +91,10 @@ describe("executeRun (integration)", () => {
 
       expect(result.exitCode).toBe(0);
       expect(
-        stderr(result).some((l) => l.includes("Using spec from")),
+        result.getStderr().some((l) => l.includes("Using spec from")),
       ).toBe(true);
-      expect(stdout(result)).toContain("Hola, Mundo!");
-      expect(stdout(result)).toContain("7");
+      expect(result.getStdout()).toContain("Hola, Mundo!");
+      expect(result.getStdout()).toContain("7");
     });
   });
 
@@ -114,9 +104,11 @@ describe("executeRun (integration)", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        stderr(result).some((l) => l.includes("File does not exist")),
+        result
+          .getStderr()
+          .some((l) => l.includes("File does not exist")),
       ).toBe(true);
-      expect(stdout(result)).toEqual([]);
+      expect(result.getStdout()).toEqual([]);
     });
 
     it("should return exitCode 1 when the spec file does not exist", () => {
@@ -128,9 +120,11 @@ describe("executeRun (integration)", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        stderr(result).some((l) => l.includes("File does not exist")),
+        result
+          .getStderr()
+          .some((l) => l.includes("File does not exist")),
       ).toBe(true);
-      expect(stdout(result)).toEqual([]);
+      expect(result.getStdout()).toEqual([]);
     });
   });
 });

@@ -1,7 +1,7 @@
-import { Lexer } from "../src/lex/lexer";
-import { TokenType } from "../src/lex/token";
-import { Reporter } from "../src/reporter/reporter";
-import { ErrorPhase } from "../src/errors/types";
+import { Lexer } from "@langskin/lex/lexer";
+import { TokenType } from "@langskin/lex/token";
+import { Reporter } from "@langskin/reporter/reporter";
+import { ErrorPhase } from "@langskin/errors/types";
 import { describe, it, expect } from "vitest";
 
 function tokenize(source: string, reporter?: Reporter) {

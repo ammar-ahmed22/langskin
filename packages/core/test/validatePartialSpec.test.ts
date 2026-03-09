@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validatePartialSpec } from "../src/api/validatePartialSpec";
+import { validatePartialSpec } from "@langskin";
 
 describe("validatePartialSpec", () => {
   describe("valid specs", () => {

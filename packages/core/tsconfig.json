@@ -10,7 +10,7 @@
     "emitDeclarationOnly": false,
 
     "strict": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": true,
 
     "types": ["node"],
@@ -20,7 +20,14 @@
     "resolveJsonModule": true,
 
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "paths": {
+      "@core/*": ["./*"],
+      "@langskin": ["./src/index"],
+      "@langskin/*": ["./src/*"],
+      "@cli/*": ["./src/cli/*"],
+      "@test/*": ["./test/*"]
+    }
   },
   "include": ["src", "test"],
   "exclude": ["dist"]

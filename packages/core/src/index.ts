@@ -16,4 +16,7 @@ export { DEFAULT_SPEC } from "./spec/defaultSpec";
 export { createSpec } from "./api/createSpec";
 export { validateSpec } from "./api/validateSpec";
 export { validatePartialSpec } from "./api/validatePartialSpec";
-export { createLangskin } from "./api/createLangskin";
+export {
+  createLangskin,
+  LangskinSession,
+} from "./api/createLangskin";

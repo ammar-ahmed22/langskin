@@ -81,6 +81,50 @@ langskin run test/fixtures/counter_class.ls
 langskin run test/fixtures/spanish.ls -s test/fixtures/spanish_spec.json
 ```
 
+#### `repl`
+
+Start an interactive REPL session.
+
+```bash
+langskin repl [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `-s, --spec <file>` | Path to a JSON spec file to run with custom keywords (same format as `createLangskin()`) |
+| `-h, --help` | Display help for the repl command |
+
+**Examples:**
+
+```bash
+# Start a REPL with default keywords
+langskin repl
+
+# Start a REPL with a custom keyword spec
+langskin repl -s my-spec.json
+```
+
+Once inside the REPL, type any langskin expression or statement and press Enter to execute it. Session state (variables, functions, classes) is preserved across lines.
+
+**REPL commands:**
+
+| Command | Description |
+|---------|-------------|
+| `.help` | Show available REPL commands |
+| `.exit` | Exit the REPL |
+| `.save <filename>` | Save the current session's code to a file |
+
+**Multi-line blocks:** Lines ending with `{` switch the prompt to `... ` and buffer input until the outermost `}` closes the block, at which point the entire block is executed.
+
+```
+> let x = 10;
+> fun double(n) {
+...   return n * 2;
+... }
+> print double(x);
+20
+```
+
 ## Custom Keywords
 
 The main feature of langskin is the ability to customize all language keywords. Pass a partial spec to `createLangskin()` and only override what you need:

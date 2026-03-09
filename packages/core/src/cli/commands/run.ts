@@ -1,90 +1,37 @@
 import { Command } from "@commander-js/extra-typings";
 import prettyMs from "pretty-ms";
 import chalk from "chalk";
+import { createLangskin } from "@langskin";
 import {
-  createLangskin,
-  createSpec,
-  PartialLangskinSpec,
-  validatePartialSpec,
-} from "../../";
-import path from "path";
-import { existsSync, readFileSync } from "fs";
+  Output,
+  stdout,
+  stderr,
+  CommandResult,
+  // exitWithError,
+} from "../utils/";
 import { performance } from "perf_hooks";
-
-export type Output = {
-  type: "stdout" | "stderr";
-  raw: string;
-};
-
-function stdout(line: string): Output {
-  return { type: "stdout", raw: line };
-}
-
-function stderr(line: string): Output {
-  return { type: "stderr", raw: line };
-}
-
-export type RunResult = {
-  exitCode: number;
-  output: Output[];
-};
-
-function exitWithError(message: string): RunResult {
-  return {
-    exitCode: 1,
-    output: [stderr(message)],
-  };
-}
+import { readFile, readSpecFile } from "../utils/file";
 
 export function executeRun(
   cwd: string,
   filePath: string,
   specPath?: string,
-): RunResult {
-  const resolvedFilePath = path.resolve(cwd, filePath);
-  const resolvedSpecPath = specPath
-    ? path.resolve(cwd, specPath)
-    : undefined;
-  if (!existsSync(resolvedFilePath)) {
-    return exitWithError(
-      `Cannot open file ${filePath}: File does not exist`,
-    );
+): CommandResult {
+  const [readFileResult, code] = readFile(cwd, filePath);
+  if (readFileResult.failure()) {
+    return readFileResult;
   }
 
-  const code = readFileSync(resolvedFilePath, "utf-8");
-  let spec = createSpec();
+  let spec = undefined;
   const output: Output[] = [];
 
-  if (resolvedSpecPath !== undefined) {
-    if (!existsSync(resolvedSpecPath)) {
-      return exitWithError(
-        `Cannot open file ${specPath}: File does not exist`,
-      );
+  if (specPath !== undefined) {
+    const [readSpecResult, parsedSpec] = readSpecFile(cwd, specPath);
+    if (readSpecResult.failure()) {
+      return readSpecResult;
     }
-
-    const specContent = readFileSync(resolvedSpecPath, "utf-8");
-    let parsedPartialSpec: unknown;
-    try {
-      parsedPartialSpec = JSON.parse(specContent);
-    } catch (e) {
-      return exitWithError(
-        `'${specPath}' is not valid JSON: ${e instanceof Error ? e.message : String(e)}`,
-      );
-    }
-
-    const validation = validatePartialSpec(parsedPartialSpec);
-    if (!validation.valid) {
-      return {
-        exitCode: 1,
-        output: [
-          stderr(`'${resolvedSpecPath}' is not a valid spec:`),
-          ...validation.errors.map((e) => stderr(`  ${e}`)),
-        ],
-      };
-    }
-
     output.push(stderr(chalk.blue(`Using spec from ${specPath}`)));
-    spec = createSpec(parsedPartialSpec as PartialLangskinSpec);
+    spec = parsedSpec!;
   }
 
   const lang = createLangskin(spec);
@@ -99,15 +46,11 @@ export function executeRun(
         chalk.green(`\u2713 Finished in ${prettyMs(end - start)}`),
       ),
     );
-    return {
-      exitCode: 0,
-      output,
-    };
+    return CommandResult.success(output);
   } else {
-    return {
-      exitCode: 1,
-      output: reporter.formattedErrors().map((l) => stderr(l)),
-    };
+    const result = CommandResult.error();
+    reporter.formattedErrors().forEach((l) => result.addStderr(l));
+    return result;
   }
 }
 
@@ -121,12 +64,6 @@ export const runCommand = new Command("run")
   .action((file, options) => {
     const cwd = process.cwd();
     const result = executeRun(cwd, file, options.spec);
-    result.output.forEach((o) => {
-      if (o.type === "stdout") {
-        console.log(o.raw);
-      } else {
-        console.error(o.raw);
-      }
-    });
+    result.flush();
     process.exit(result.exitCode);
   });
