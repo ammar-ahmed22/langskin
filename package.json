@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "lint": "eslint .",
+    "lint": "pnpm -r lint",
     "format": "prettier --write .",
     "dev:cli": "pnpm --filter langskin dev:cli",
     "dev:playground": "pnpm --filter playground dev"

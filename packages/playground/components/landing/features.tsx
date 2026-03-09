@@ -5,8 +5,13 @@ import {
   Terminal,
   Package,
   Settings2,
-} from "lucide-react"
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+} from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 const features = [
   {
@@ -45,7 +50,7 @@ const features = [
     description:
       "Start with English-like defaults right away. Override only the keywords you care about — everything else just works.",
   },
-]
+];
 
 export function Features() {
   return (
@@ -63,8 +68,8 @@ export function Features() {
             A full language under the hood.
           </h2>
           <p className="mt-4 text-zinc-400">
-            Langskin ships with a complete interpreter. You just choose what
-            words to use.
+            Langskin ships with a complete interpreter. You just
+            choose what words to use.
           </p>
         </div>
 
@@ -91,5 +96,5 @@ export function Features() {
         </div>
       </div>
     </section>
-  )
+  );
 }

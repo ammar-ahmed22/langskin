@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Github } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import Link from "next/link";
+import { Github } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const links = [
   {
@@ -21,7 +21,7 @@ const links = [
   { label: "Features", href: "#features", external: false },
   { label: "Demo", href: "#demo", external: false },
   { label: "Install", href: "#install", external: false },
-]
+];
 
 export function Footer() {
   return (
@@ -59,7 +59,7 @@ export function Footer() {
                 >
                   {label}
                 </Link>
-              )
+              ),
             )}
           </nav>
         </div>
@@ -90,5 +90,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
