@@ -3,7 +3,6 @@ import prettyMs from "pretty-ms";
 import chalk from "chalk";
 import {
   createLangskin,
-  createSpec,
   PartialLangskinSpec,
   validatePartialSpec,
 } from "../../";
@@ -52,7 +51,7 @@ export function executeRun(
   }
 
   const code = readFileSync(resolvedFilePath, "utf-8");
-  let spec = createSpec();
+  let spec = undefined;
   const output: Output[] = [];
 
   if (resolvedSpecPath !== undefined) {
@@ -84,7 +83,7 @@ export function executeRun(
     }
 
     output.push(stderr(chalk.blue(`Using spec from ${specPath}`)));
-    spec = createSpec(parsedPartialSpec as PartialLangskinSpec);
+    spec = parsedPartialSpec as PartialLangskinSpec;
   }
 
   const lang = createLangskin(spec);
