@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { existsSync, readFileSync } from "fs";
-import { executeRun, RunResult } from "../../src/cli/commands/run";
+import { executeRun } from "../../src/cli/commands/run";
 
 vi.mock("fs");
 
@@ -11,18 +11,6 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-function getStdout(result: RunResult): string[] {
-  return result.output
-    .filter((o) => o.type === "stdout")
-    .map((o) => o.raw);
-}
-
-function getStderr(result: RunResult): string[] {
-  return result.output
-    .filter((o) => o.type === "stderr")
-    .map((o) => o.raw);
-}
-
 describe("executeRun", () => {
   describe("source file handling", () => {
     it("should return exitCode 1 when source file does not exist", () => {
@@ -31,10 +19,10 @@ describe("executeRun", () => {
       const result = executeRun("/", "/mock/source.ls");
 
       expect(result.exitCode).toBe(1);
-      expect(getStderr(result)).toContain(
+      expect(result.getStderr()).toContain(
         "Cannot open file /mock/source.ls: File does not exist",
       );
-      expect(getStdout(result)).toEqual([]);
+      expect(result.getStdout()).toEqual([]);
     });
 
     it("should return exitCode 0 and output when source file runs successfully", () => {
@@ -44,9 +32,9 @@ describe("executeRun", () => {
       const result = executeRun("/", "/mock/source.ls");
 
       expect(result.exitCode).toBe(0);
-      expect(getStdout(result)).toContain("hello");
+      expect(result.getStdout()).toContain("hello");
       expect(
-        getStderr(result).some((l) => l.includes("Finished in")),
+        result.getStderr().some((l) => l.includes("Finished in")),
       ).toBe(true);
     });
 
@@ -58,9 +46,11 @@ describe("executeRun", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        getStderr(result).some((l) => l.includes("Division by zero")),
+        result
+          .getStderr()
+          .some((l) => l.includes("Division by zero")),
       ).toBe(true);
-      expect(getStdout(result)).toEqual([]);
+      expect(result.getStdout()).toEqual([]);
     });
   });
 
@@ -78,7 +68,7 @@ describe("executeRun", () => {
       );
 
       expect(result.exitCode).toBe(1);
-      expect(getStderr(result)).toContain(
+      expect(result.getStderr()).toContain(
         "Cannot open file /mock/spec.json: File does not exist",
       );
     });
@@ -97,9 +87,9 @@ describe("executeRun", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        getStderr(result).some((l) =>
-          l.includes("is not valid JSON"),
-        ),
+        result
+          .getStderr()
+          .some((l) => l.includes("is not valid JSON")),
       ).toBe(true);
     });
 
@@ -121,9 +111,9 @@ describe("executeRun", () => {
 
       expect(result.exitCode).toBe(1);
       expect(
-        getStderr(result).some((l) =>
-          l.includes("is not a valid spec"),
-        ),
+        result
+          .getStderr()
+          .some((l) => l.includes("is not a valid spec")),
       ).toBe(true);
     });
 
@@ -143,11 +133,11 @@ describe("executeRun", () => {
 
       expect(result.exitCode).toBe(0);
       expect(
-        getStderr(result).some((l) => l.includes("Using spec from")),
+        result.getStderr().some((l) => l.includes("Using spec from")),
       ).toBe(true);
-      expect(getStdout(result)).toContain("42");
+      expect(result.getStdout()).toContain("42");
       expect(
-        getStderr(result).some((l) => l.includes("Finished in")),
+        result.getStderr().some((l) => l.includes("Finished in")),
       ).toBe(true);
     });
   });

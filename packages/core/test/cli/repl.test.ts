@@ -10,10 +10,10 @@ import { existsSync, readFileSync } from "fs";
 import {
   executeReplSetup,
   runRepl,
-  type Output,
 } from "../../src/cli/commands/repl";
 import { createLangskin } from "../../src/";
 import readline from "readline";
+// import { getStderr } from "../../src/cli/utils";
 
 vi.mock("fs");
 
@@ -24,10 +24,6 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-function getStderr(output: Output[]): string[] {
-  return output.filter((o) => o.type === "stderr").map((o) => o.raw);
-}
-
 // ---------------------------------------------------------------------------
 // executeReplSetup
 // ---------------------------------------------------------------------------
@@ -35,9 +31,9 @@ function getStderr(output: Output[]): string[] {
 describe("executeReplSetup", () => {
   describe("no spec path", () => {
     it("should return success with no output messages", () => {
-      const result = executeReplSetup("/");
+      const [isSuccessful, result] = executeReplSetup("/");
 
-      expect(result.type).toBe("success");
+      expect(isSuccessful).toBe(true);
       expect(result.output).toEqual([]);
     });
   });
@@ -46,12 +42,15 @@ describe("executeReplSetup", () => {
     it("should return exitCode 1 when spec file does not exist", () => {
       mockExistsSync.mockReturnValue(false);
 
-      const result = executeReplSetup("/", "/mock/spec.json");
+      const [isSuccessful, result] = executeReplSetup(
+        "/",
+        "/mock/spec.json",
+      );
 
-      expect(result.type).toBe("error");
-      if (result.type === "error") {
+      expect(isSuccessful).toBe(false);
+      if (!isSuccessful) {
         expect(result.exitCode).toBe(1);
-        expect(getStderr(result.output)).toContain(
+        expect(result.getStderr()).toContain(
           "Cannot open file /mock/spec.json: File does not exist",
         );
       }
@@ -61,15 +60,18 @@ describe("executeReplSetup", () => {
       mockExistsSync.mockReturnValue(true);
       mockReadFileSync.mockReturnValue("not valid json {{{" as never);
 
-      const result = executeReplSetup("/", "/mock/spec.json");
+      const [isSuccessful, result] = executeReplSetup(
+        "/",
+        "/mock/spec.json",
+      );
 
-      expect(result.type).toBe("error");
-      if (result.type === "error") {
+      expect(isSuccessful).toBe(false);
+      if (!isSuccessful) {
         expect(result.exitCode).toBe(1);
         expect(
-          getStderr(result.output).some((l) =>
-            l.includes("is not valid JSON"),
-          ),
+          result
+            .getStderr()
+            .some((l) => l.includes("is not valid JSON")),
         ).toBe(true);
       }
     });
@@ -82,15 +84,18 @@ describe("executeReplSetup", () => {
         }) as never,
       );
 
-      const result = executeReplSetup("/", "/mock/spec.json");
+      const [isSuccessful, result] = executeReplSetup(
+        "/",
+        "/mock/spec.json",
+      );
 
-      expect(result.type).toBe("error");
-      if (result.type === "error") {
+      expect(isSuccessful).toBe(false);
+      if (!isSuccessful) {
         expect(result.exitCode).toBe(1);
         expect(
-          getStderr(result.output).some((l) =>
-            l.includes("is not a valid spec"),
-          ),
+          result
+            .getStderr()
+            .some((l) => l.includes("is not a valid spec")),
         ).toBe(true);
       }
     });
@@ -101,14 +106,17 @@ describe("executeReplSetup", () => {
         JSON.stringify({ keywords: { var: "variable" } }) as never,
       );
 
-      const result = executeReplSetup("/", "/mock/spec.json");
+      const [isSuccessful, result] = executeReplSetup(
+        "/",
+        "/mock/spec.json",
+      );
 
-      expect(result.type).toBe("success");
-      if (result.type === "success") {
+      expect(isSuccessful).toBe(true);
+      if (isSuccessful) {
         expect(
-          getStderr(result.output).some((l) =>
-            l.includes("Using spec from"),
-          ),
+          result
+            .getStderr()
+            .some((l) => l.includes("Using spec from")),
         ).toBe(true);
       }
     });

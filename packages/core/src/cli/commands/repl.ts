@@ -2,27 +2,14 @@ import pkg from "../../../package.json" assert { type: "json" };
 import { Command } from "@commander-js/extra-typings";
 import readline from "readline";
 import chalk from "chalk";
-import path from "path";
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import {
-  createLangskin,
-  LangskinSession,
-  PartialLangskinSpec,
-  validatePartialSpec,
-} from "../../";
-
-export type Output = {
-  type: "stdout" | "stderr";
-  raw: string;
-};
-
-function stderr(raw: string): Output {
-  return { type: "stderr", raw };
-}
+import { writeFileSync } from "fs";
+import { createLangskin, LangskinSession } from "../../";
+import { CommandResult, stderr } from "../utils/";
+import { readSpecFile } from "../utils/file";
 
 export type ReplSetupResult =
-  | { type: "error"; exitCode: 1; output: Output[] }
-  | { type: "success"; session: LangskinSession; output: Output[] };
+  | [false, CommandResult]
+  | [true, CommandResult, LangskinSession];
 
 export function executeReplSetup(
   cwd: string,
@@ -30,63 +17,22 @@ export function executeReplSetup(
 ): ReplSetupResult {
   if (!specPath) {
     const lang = createLangskin();
-    return {
-      type: "success",
-      session: lang.createSession(),
-      output: [],
-    };
+    return [true, CommandResult.success(), lang.createSession()];
   }
 
-  const resolvedSpecPath = path.resolve(cwd, specPath);
-
-  if (!existsSync(resolvedSpecPath)) {
-    return {
-      type: "error",
-      exitCode: 1,
-      output: [
-        stderr(`Cannot open file ${specPath}: File does not exist`),
-      ],
-    };
+  const [result, parsedSpec] = readSpecFile(cwd, specPath);
+  if (result.failure()) {
+    return [false, result];
   }
 
-  const specContent = readFileSync(resolvedSpecPath, "utf-8");
-  let parsedPartialSpec: unknown;
-  try {
-    parsedPartialSpec = JSON.parse(specContent);
-  } catch (e) {
-    return {
-      type: "error",
-      exitCode: 1,
-      output: [
-        stderr(
-          `'${specPath}' is not valid JSON: ${
-            e instanceof Error ? e.message : String(e)
-          }`,
-        ),
-      ],
-    };
-  }
-
-  const validation = validatePartialSpec(parsedPartialSpec);
-  if (!validation.valid) {
-    return {
-      type: "error",
-      exitCode: 1,
-      output: [
-        stderr(`'${resolvedSpecPath}' is not a valid spec:`),
-        ...validation.errors.map((e) => stderr(`  ${e}`)),
-      ],
-    };
-  }
-
-  const lang = createLangskin(
-    parsedPartialSpec as PartialLangskinSpec,
-  );
-  return {
-    type: "success",
-    session: lang.createSession(),
-    output: [stderr(chalk.blue(`Using spec from ${specPath}`))],
-  };
+  const lang = createLangskin(parsedSpec!);
+  return [
+    true,
+    CommandResult.success([
+      stderr(chalk.blue(`Using spec from ${specPath}`)),
+    ]),
+    lang.createSession(),
+  ];
 }
 
 function help() {
@@ -224,7 +170,10 @@ export const replCommand = new Command("repl")
     "The JSON spec file to skin the language with",
   )
   .action((options) => {
-    const result = executeReplSetup(process.cwd(), options.spec);
+    const [isSuccessful, result, session] = executeReplSetup(
+      process.cwd(),
+      options.spec,
+    );
     result.output.forEach((o) => {
       if (o.type === "stdout") {
         console.log(o.raw);
@@ -232,7 +181,7 @@ export const replCommand = new Command("repl")
         console.error(o.raw);
       }
     });
-    if (result.type === "error") {
+    if (!isSuccessful) {
       process.exit(result.exitCode);
     }
     const rl = readline.createInterface({
@@ -240,5 +189,5 @@ export const replCommand = new Command("repl")
       output: process.stdout,
       prompt: "> ",
     });
-    runRepl(rl, result.session);
+    runRepl(rl, session);
   });
