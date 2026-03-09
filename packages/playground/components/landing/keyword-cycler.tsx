@@ -1,24 +1,29 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
-const phrases = ["your words.", "español.", "français.", "your own DSL."]
+const phrases = [
+  "your words.",
+  "español.",
+  "français.",
+  "your own DSL.",
+];
 
 export function KeywordCycler() {
-  const [index, setIndex] = useState(0)
-  const [visible, setVisible] = useState(true)
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setVisible(false)
+      setVisible(false);
       const switchTimer = setTimeout(() => {
-        setIndex((i) => (i + 1) % phrases.length)
-        setVisible(true)
-      }, 250)
-      return () => clearTimeout(switchTimer)
-    }, 2800)
-    return () => clearInterval(timer)
-  }, [])
+        setIndex((i) => (i + 1) % phrases.length);
+        setVisible(true);
+      }, 250);
+      return () => clearTimeout(switchTimer);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <span
@@ -27,5 +32,5 @@ export function KeywordCycler() {
     >
       {phrases[index]}
     </span>
-  )
+  );
 }

@@ -1,7 +1,12 @@
-"use client"
+"use client";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { cn } from "@/lib/utils"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
@@ -9,8 +14,8 @@ function Line({
   n,
   children,
 }: {
-  n: number
-  children: React.ReactNode
+  n: number;
+  children: React.ReactNode;
 }) {
   return (
     <div className="flex">
@@ -19,11 +24,11 @@ function Line({
       </span>
       <span className="text-xs">{children}</span>
     </div>
-  )
+  );
 }
 
 function Blank({ n }: { n: number }) {
-  return <Line n={n}>&nbsp;</Line>
+  return <Line n={n}>&nbsp;</Line>;
 }
 
 function Panel({
@@ -31,20 +36,22 @@ function Panel({
   children,
   className,
 }: {
-  title: string
-  children: React.ReactNode
-  className?: string
+  title: string;
+  children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <div className={cn("flex flex-col", className)}>
       <div className="border-b border-white/10 bg-zinc-900/60 px-3 py-1.5">
-        <span className="font-mono text-[11px] text-zinc-500">{title}</span>
+        <span className="font-mono text-[11px] text-zinc-500">
+          {title}
+        </span>
       </div>
       <pre className="flex-1 overflow-x-auto p-4 font-mono leading-[1.65rem]">
         {children}
       </pre>
     </div>
-  )
+  );
 }
 
 // ─── Default (English) ────────────────────────────────────────────────────────
@@ -52,7 +59,9 @@ function Panel({
 function DefaultSpec() {
   return (
     <Panel title="spec.json" className="h-full">
-      <Line n={1}><span className="text-zinc-500">{"{"}</span></Line>
+      <Line n={1}>
+        <span className="text-zinc-500">{"{"}</span>
+      </Line>
       <Line n={2}>
         <span className="text-zinc-400">{"  "}</span>
         <span className="text-zinc-400">"keywords"</span>
@@ -92,10 +101,14 @@ function DefaultSpec() {
         <span className="text-zinc-500">{": "}</span>
         <span className="text-orange-300">"else"</span>
       </Line>
-      <Line n={8}><span className="text-zinc-500">{"  }"}</span></Line>
-      <Line n={9}><span className="text-zinc-500">{"}"}</span></Line>
+      <Line n={8}>
+        <span className="text-zinc-500">{"  }"}</span>
+      </Line>
+      <Line n={9}>
+        <span className="text-zinc-500">{"}"}</span>
+      </Line>
     </Panel>
-  )
+  );
 }
 
 function DefaultCode() {
@@ -117,8 +130,8 @@ function DefaultCode() {
       <Line n={3}>
         <span>{"    "}</span>
         <span className="text-sky-400">print</span>
-        <span className="text-zinc-300">{" "}</span>
-        <span className="text-green-300">{"\"Hello, \""}</span>
+        <span className="text-zinc-300"> </span>
+        <span className="text-green-300">{'"Hello, "'}</span>
         <span className="text-zinc-500">{" + name"}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
@@ -130,21 +143,26 @@ function DefaultCode() {
       <Line n={5}>
         <span>{"    "}</span>
         <span className="text-sky-400">print</span>
-        <span className="text-zinc-300">{" "}</span>
-        <span className="text-green-300">{"\"Hello, World!\""}</span>
+        <span className="text-zinc-300"> </span>
+        <span className="text-green-300">{'"Hello, World!"'}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
-      <Line n={6}><span className="text-zinc-500">{"  }"}</span></Line>
-      <Line n={7}><span className="text-zinc-500">{"}"}</span><span className="text-zinc-500">{";"}</span></Line>
+      <Line n={6}>
+        <span className="text-zinc-500">{"  }"}</span>
+      </Line>
+      <Line n={7}>
+        <span className="text-zinc-500">{"}"}</span>
+        <span className="text-zinc-500">{";"}</span>
+      </Line>
       <Blank n={8} />
       <Line n={9}>
         <span className="text-zinc-300">{"greet("}</span>
-        <span className="text-green-300">{"\"Langskin\""}</span>
+        <span className="text-green-300">{'"Langskin"'}</span>
         <span className="text-zinc-300">{")"}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
     </Panel>
-  )
+  );
 }
 
 // ─── Español ─────────────────────────────────────────────────────────────────
@@ -152,7 +170,9 @@ function DefaultCode() {
 function SpanishSpec() {
   return (
     <Panel title="spec.json" className="h-full">
-      <Line n={1}><span className="text-zinc-500">{"{"}</span></Line>
+      <Line n={1}>
+        <span className="text-zinc-500">{"{"}</span>
+      </Line>
       <Line n={2}>
         <span className="text-zinc-400">{"  "}</span>
         <span className="text-zinc-400">"keywords"</span>
@@ -192,10 +212,14 @@ function SpanishSpec() {
         <span className="text-zinc-500">{": "}</span>
         <span className="text-orange-300">"sino"</span>
       </Line>
-      <Line n={8}><span className="text-zinc-500">{"  }"}</span></Line>
-      <Line n={9}><span className="text-zinc-500">{"}"}</span></Line>
+      <Line n={8}>
+        <span className="text-zinc-500">{"  }"}</span>
+      </Line>
+      <Line n={9}>
+        <span className="text-zinc-500">{"}"}</span>
+      </Line>
     </Panel>
-  )
+  );
 }
 
 function SpanishCode() {
@@ -217,8 +241,8 @@ function SpanishCode() {
       <Line n={3}>
         <span>{"    "}</span>
         <span className="text-sky-400">imprimir</span>
-        <span className="text-zinc-300">{" "}</span>
-        <span className="text-green-300">{"\"Hola, \""}</span>
+        <span className="text-zinc-300"> </span>
+        <span className="text-green-300">{'"Hola, "'}</span>
         <span className="text-zinc-500">{" + nombre"}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
@@ -230,21 +254,26 @@ function SpanishCode() {
       <Line n={5}>
         <span>{"    "}</span>
         <span className="text-sky-400">imprimir</span>
-        <span className="text-zinc-300">{" "}</span>
-        <span className="text-green-300">{"\"Hola, Mundo!\""}</span>
+        <span className="text-zinc-300"> </span>
+        <span className="text-green-300">{'"Hola, Mundo!"'}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
-      <Line n={6}><span className="text-zinc-500">{"  }"}</span></Line>
-      <Line n={7}><span className="text-zinc-500">{"}"}</span><span className="text-zinc-500">{";"}</span></Line>
+      <Line n={6}>
+        <span className="text-zinc-500">{"  }"}</span>
+      </Line>
+      <Line n={7}>
+        <span className="text-zinc-500">{"}"}</span>
+        <span className="text-zinc-500">{";"}</span>
+      </Line>
       <Blank n={8} />
       <Line n={9}>
         <span className="text-zinc-300">{"saludar("}</span>
-        <span className="text-green-300">{"\"Langskin\""}</span>
+        <span className="text-green-300">{'"Langskin"'}</span>
         <span className="text-zinc-300">{")"}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
     </Panel>
-  )
+  );
 }
 
 // ─── Custom DSL ───────────────────────────────────────────────────────────────
@@ -252,7 +281,9 @@ function SpanishCode() {
 function CustomSpec() {
   return (
     <Panel title="spec.json" className="h-full">
-      <Line n={1}><span className="text-zinc-500">{"{"}</span></Line>
+      <Line n={1}>
+        <span className="text-zinc-500">{"{"}</span>
+      </Line>
       <Line n={2}>
         <span className="text-zinc-400">{"  "}</span>
         <span className="text-zinc-400">"keywords"</span>
@@ -292,10 +323,14 @@ function CustomSpec() {
         <span className="text-zinc-500">{": "}</span>
         <span className="text-orange-300">"fallback"</span>
       </Line>
-      <Line n={8}><span className="text-zinc-500">{"  }"}</span></Line>
-      <Line n={9}><span className="text-zinc-500">{"}"}</span></Line>
+      <Line n={8}>
+        <span className="text-zinc-500">{"  }"}</span>
+      </Line>
+      <Line n={9}>
+        <span className="text-zinc-500">{"}"}</span>
+      </Line>
     </Panel>
-  )
+  );
 }
 
 function CustomCode() {
@@ -317,8 +352,8 @@ function CustomCode() {
       <Line n={3}>
         <span>{"    "}</span>
         <span className="text-sky-400">emit</span>
-        <span className="text-zinc-300">{" "}</span>
-        <span className="text-green-300">{"\"Hello, \""}</span>
+        <span className="text-zinc-300"> </span>
+        <span className="text-green-300">{'"Hello, "'}</span>
         <span className="text-zinc-500">{" + name"}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
@@ -330,21 +365,26 @@ function CustomCode() {
       <Line n={5}>
         <span>{"    "}</span>
         <span className="text-sky-400">emit</span>
-        <span className="text-zinc-300">{" "}</span>
-        <span className="text-green-300">{"\"Hello, World!\""}</span>
+        <span className="text-zinc-300"> </span>
+        <span className="text-green-300">{'"Hello, World!"'}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
-      <Line n={6}><span className="text-zinc-500">{"  }"}</span></Line>
-      <Line n={7}><span className="text-zinc-500">{"}"}</span><span className="text-zinc-500">{";"}</span></Line>
+      <Line n={6}>
+        <span className="text-zinc-500">{"  }"}</span>
+      </Line>
+      <Line n={7}>
+        <span className="text-zinc-500">{"}"}</span>
+        <span className="text-zinc-500">{";"}</span>
+      </Line>
       <Blank n={8} />
       <Line n={9}>
         <span className="text-zinc-300">{"greet("}</span>
-        <span className="text-green-300">{"\"Langskin\""}</span>
+        <span className="text-green-300">{'"Langskin"'}</span>
         <span className="text-zinc-300">{")"}</span>
         <span className="text-zinc-500">{";"}</span>
       </Line>
     </Panel>
-  )
+  );
 }
 
 // ─── Main export ─────────────────────────────────────────────────────────────
@@ -362,8 +402,8 @@ export function SyntaxDemo() {
             One JSON. Infinite possibilities.
           </h2>
           <p className="mt-4 text-zinc-400">
-            Map any keyword to any word. The logic stays the same — only the
-            syntax changes.
+            Map any keyword to any word. The logic stays the same —
+            only the syntax changes.
           </p>
         </div>
 
@@ -390,8 +430,13 @@ export function SyntaxDemo() {
               { color: "bg-rose-400", label: "if" },
               { color: "bg-orange-400", label: "else" },
             ].map(({ color, label }) => (
-              <span key={label} className="flex items-center gap-1.5 font-mono text-xs text-zinc-500">
-                <span className={`inline-block h-1.5 w-1.5 rounded-full ${color}`} />
+              <span
+                key={label}
+                className="flex items-center gap-1.5 font-mono text-xs text-zinc-500"
+              >
+                <span
+                  className={`inline-block h-1.5 w-1.5 rounded-full ${color}`}
+                />
                 {label}
               </span>
             ))}
@@ -399,8 +444,16 @@ export function SyntaxDemo() {
 
           {/* Tab content panels */}
           {[
-            { value: "default", Spec: DefaultSpec, Code: DefaultCode },
-            { value: "spanish", Spec: SpanishSpec, Code: SpanishCode },
+            {
+              value: "default",
+              Spec: DefaultSpec,
+              Code: DefaultCode,
+            },
+            {
+              value: "spanish",
+              Spec: SpanishSpec,
+              Code: SpanishCode,
+            },
             { value: "custom", Spec: CustomSpec, Code: CustomCode },
           ].map(({ value, Spec, Code }) => (
             <TabsContent key={value} value={value}>
@@ -417,5 +470,5 @@ export function SyntaxDemo() {
         </Tabs>
       </div>
     </section>
-  )
+  );
 }

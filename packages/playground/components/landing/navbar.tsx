@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Github } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Github } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -60,5 +60,5 @@ export function Navbar() {
         </Button>
       </div>
     </header>
-  )
+  );
 }

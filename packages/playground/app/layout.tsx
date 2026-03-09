@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Outfit, Geist_Mono } from "next/font/google";
+import {
+  Bricolage_Grotesque,
+  Outfit,
+  Geist_Mono,
+} from "next/font/google";
 import "./globals.css";
 
 // Display font — organic variable-width grotesque. Distinctive letterforms at
@@ -40,9 +44,7 @@ export default function RootLayout({
       lang="en"
       className={`dark scroll-smooth ${bricolage.variable} ${outfit.variable} ${geistMono.variable}`}
     >
-      <body className="antialiased font-sans">
-        {children}
-      </body>
+      <body className="antialiased font-sans">{children}</body>
     </html>
   );
 }
