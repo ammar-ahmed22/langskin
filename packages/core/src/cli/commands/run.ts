@@ -64,12 +64,6 @@ export const runCommand = new Command("run")
   .action((file, options) => {
     const cwd = process.cwd();
     const result = executeRun(cwd, file, options.spec);
-    result.output.forEach((o) => {
-      if (o.type === "stdout") {
-        console.log(o.raw);
-      } else {
-        console.error(o.raw);
-      }
-    });
+    result.flush();
     process.exit(result.exitCode);
   });

@@ -45,6 +45,16 @@ export class CommandResult {
     return this.exitCode !== 0;
   }
 
+  public flush(): void {
+    this.output.forEach((o) => {
+      if (o.type === "stdout") {
+        console.log(o.raw);
+      } else {
+        console.error(o.raw);
+      }
+    });
+  }
+
   static success(output: Output[] = []): CommandResult {
     return new CommandResult(0, output);
   }
