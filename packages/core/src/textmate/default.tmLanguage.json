@@ -1,0 +1,326 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Langskin",
+  "scopeName": "source.langskin",
+  "fileTypes": [
+    "ls",
+    "langskin"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#class-declaration"
+    },
+    {
+      "include": "#function-declaration"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#constants"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#super-method-call"
+    },
+    {
+      "include": "#member-method-call"
+    },
+    {
+      "include": "#member-access"
+    },
+    {
+      "include": "#function-calls"
+    },
+    {
+      "include": "#punctuation"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.langskin",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.langskin",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.langskin"
+            }
+          },
+          "end": "\"",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.langskin"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.langskin",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "class-declaration": {
+      "name": "meta.class.declaration.langskin",
+      "begin": "\\b(class)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)(?:\\s+(inherits)\\s+([A-Za-z_][A-Za-z0-9_]*))?\\s*(\\{)",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.type.class.langskin"
+        },
+        "2": {
+          "name": "entity.name.type.class.langskin"
+        },
+        "3": {
+          "name": "keyword.control.inheritance.langskin"
+        },
+        "4": {
+          "name": "entity.other.inherited-class.langskin"
+        },
+        "5": {
+          "name": "punctuation.section.block.begin.langskin"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.block.end.langskin"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#constructor-method"
+        },
+        {
+          "include": "#method-declaration"
+        },
+        {
+          "include": "#keywords"
+        },
+        {
+          "include": "#constants"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#operators"
+        },
+        {
+          "include": "#super-method-call"
+        },
+        {
+          "include": "#member-method-call"
+        },
+        {
+          "include": "#member-access"
+        },
+        {
+          "include": "#function-calls"
+        },
+        {
+          "include": "#punctuation"
+        },
+        {
+          "include": "#identifiers"
+        }
+      ]
+    },
+    "function-declaration": {
+      "match": "\\b(fun)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+      "captures": {
+        "1": {
+          "name": "storage.type.function.langskin"
+        },
+        "2": {
+          "name": "entity.name.function.langskin"
+        }
+      }
+    },
+    "constructor-method": {
+      "match": "^\\s*(init)\\s*(?=\\([^\\n\\)]*\\)\\s*\\{)",
+      "captures": {
+        "1": {
+          "name": "storage.type.langskin"
+        }
+      }
+    },
+    "method-declaration": {
+      "match": "^\\s*(?!(?:if|elif|else|for|while|break|continue|return|print|class|fun|let|and|or|not|true|false|nil|inherits|this|super|init)\\b)([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\([^\\n\\)]*\\)\\s*\\{)",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.method.langskin"
+        }
+      }
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "storage.type.variable.langskin",
+          "match": "\\blet\\b"
+        },
+        {
+          "name": "storage.type.function.langskin",
+          "match": "\\bfun\\b"
+        },
+        {
+          "name": "storage.type.class.langskin",
+          "match": "\\bclass\\b"
+        },
+        {
+          "name": "keyword.control.flow.langskin",
+          "match": "\\b(?:if|elif|else|for|while|break|continue|return|inherits)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.langskin",
+          "match": "\\b(?:and|or|not)\\b"
+        },
+        {
+          "name": "variable.language.this.langskin",
+          "match": "\\b(?:this|super)\\b"
+        },
+        {
+          "name": "support.function.builtin.langskin",
+          "match": "\\bprint\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.langskin",
+          "match": "\\b(?:true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.langskin",
+          "match": "\\bnil\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.langskin",
+      "match": "\\b(?:\\d+\\.\\d+|\\d+)\\b"
+    },
+    "operators": {
+      "name": "keyword.operator.langskin",
+      "match": "\\+\\+|--|\\+=|-=|\\*=|/=|==|!=|<=|>=|&&|\\|\\||=|<|>|!|\\+|-|\\*|/|%"
+    },
+    "super-method-call": {
+      "match": "\\b(super)\\b(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)(?=\\()",
+      "captures": {
+        "1": {
+          "name": "variable.language.langskin"
+        },
+        "2": {
+          "name": "punctuation.accessor.dot.langskin"
+        },
+        "3": {
+          "name": "entity.name.function.method.langskin"
+        }
+      }
+    },
+    "member-method-call": {
+      "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "punctuation.accessor.dot.langskin"
+        },
+        "2": {
+          "name": "entity.name.function.method.langskin"
+        }
+      }
+    },
+    "member-access": {
+      "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)(?!\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "punctuation.accessor.dot.langskin"
+        },
+        "2": {
+          "name": "variable.other.property.langskin"
+        }
+      }
+    },
+    "function-calls": {
+      "match": "\\b(?!(?:if|elif|else|for|while|break|continue|return|print|class|fun|let|and|or|not|true|false|nil|inherits|this|super|init)\\b)([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.call.langskin"
+        }
+      }
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.section.block.begin.langskin",
+          "match": "\\{"
+        },
+        {
+          "name": "punctuation.section.block.end.langskin",
+          "match": "\\}"
+        },
+        {
+          "name": "punctuation.section.group.begin.langskin",
+          "match": "\\("
+        },
+        {
+          "name": "punctuation.section.group.end.langskin",
+          "match": "\\)"
+        },
+        {
+          "name": "punctuation.section.brackets.begin.langskin",
+          "match": "\\["
+        },
+        {
+          "name": "punctuation.section.brackets.end.langskin",
+          "match": "\\]"
+        },
+        {
+          "name": "punctuation.separator.comma.langskin",
+          "match": ","
+        },
+        {
+          "name": "punctuation.terminator.statement.langskin",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.accessor.dot.langskin",
+          "match": "\\."
+        }
+      ]
+    },
+    "identifiers": {
+      "name": "variable.other.readwrite.langskin",
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+    }
+  }
+}

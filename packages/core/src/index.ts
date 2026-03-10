@@ -20,3 +20,4 @@ export {
   createLangskin,
   LangskinSession,
 } from "./api/createLangskin";
+export { createTextMateGrammar } from "./api/createTextMateGrammar";
