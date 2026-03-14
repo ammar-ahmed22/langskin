@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { LineNumbers } from "./line-numbers";
 import { HighlightedLine } from "./highlighted-line";
 
-export type CodeBlockProps = {
+export type CustomCodeBlockProps = {
   value: string;
   grammar: IRawGrammar;
   scopeName: string;
@@ -18,7 +18,7 @@ export type CodeBlockProps = {
   showLineNumbers?: boolean;
   lineNumberStart?: number;
 };
-export default function CodeBlock({
+export default function CustomCodeBlock({
   value,
   grammar,
   scopeName,
@@ -26,7 +26,7 @@ export default function CodeBlock({
   theme = defaultTheme,
   showLineNumbers = false,
   lineNumberStart = 1,
-}: CodeBlockProps) {
+}: CustomCodeBlockProps) {
   const lineCount = useMemo(() => value.split("\n").length, [value]);
   const [lines, isLoading] = useTokenized({
     code: value,

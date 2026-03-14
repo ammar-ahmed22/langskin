@@ -26,10 +26,10 @@ export function Navbar() {
             Features
           </Link>
           <Link
-            href="#demo"
+            href="/playground"
             className="text-sm text-zinc-400 transition-colors hover:text-zinc-200"
           >
-            Demo
+            Playground
           </Link>
           <Link
             href="#install"

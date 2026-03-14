@@ -1,3 +1,4 @@
+"use client";
 import { Navbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { SyntaxDemo } from "@/components/landing/syntax-demo";

@@ -6,7 +6,7 @@ import { LineNumbers } from "./line-numbers";
 import { useMemo } from "react";
 import { HighlightedLine } from "./highlighted-line";
 
-export type CodeEditorProps = {
+export type CustomCodeEditorProps = {
   value: string;
   onChange: (value: string) => void;
   grammar: IRawGrammar;
@@ -41,7 +41,7 @@ function PlainText({
   return <>{code}</>;
 }
 
-export default function CodeEditor({
+export default function CustomCodeEditor({
   value,
   onChange,
   grammar,
@@ -50,7 +50,7 @@ export default function CodeEditor({
   theme = defaultTheme,
   showLineNumbers = false,
   lineNumberStart = 1,
-}: CodeEditorProps) {
+}: CustomCodeEditorProps) {
   const lineCount = useMemo(() => value.split("\n").length, [value]);
   const [lines, isLoading] = useTokenized({
     code: value,
