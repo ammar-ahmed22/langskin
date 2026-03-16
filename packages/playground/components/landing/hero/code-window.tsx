@@ -50,7 +50,7 @@ export function HeroCodeWindow({
       {/* Split panels */}
       <div
         className={cn(
-          "transition-opacity duration-250 ease-in-out flex divide-x divide-white/10 bg-neutral-950 overflow-hidden",
+          "transition-opacity duration-250 ease-in-out flex flex-col md:flex-row divide-y md:divide-x divide-white/10 bg-neutral-950 overflow-hidden",
           visible ? "opacity-100" : "opacity-0",
         )}
       >
@@ -70,7 +70,7 @@ export function HeroCodeWindow({
           basicSetup={false}
           theme={customTheme}
           editable={false}
-          className="w-[40%] shrink-0 overflow-x-auto p-4 text-sm"
+          className="md:w-[40%] w-full shrink-0 overflow-x-auto p-4 text-sm"
         />
         {/* Right — hello.ls */}
         <CustomCodeBlock
