@@ -1,5 +1,13 @@
 # langskin
 
+## 0.4.0
+
+### Minor Changes
+
+- 77b1e60: Add interactive REPL command (`langskin repl`) with support for multi-line nested block input.
+  The REPL provides a persistent session for evaluating langskin code interactively, automatically detecting incomplete blocks and prompting for continuation input.
+- 63529f1: Add a function, `createTextMateGrammar` that will generate a tmLanguage.json file customized based on the spec.
+
 ## 0.3.2
 
 ### Patch Changes
