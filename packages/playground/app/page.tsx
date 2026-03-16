@@ -9,6 +9,7 @@ import {
   loadFileById,
   loadFilesById,
 } from "@/lib/fs";
+import { getLatestNpmVersion } from "@/lib/npm";
 
 const heroIds = ["custom", "espanol", "francais", "langskin"];
 const heroPhrases = {
@@ -67,6 +68,7 @@ const navigationLinks: NavigationLink[] = [
 ];
 
 export default async function Home() {
+  const latestVersion = await getLatestNpmVersion("langskin");
   const heroCodeMap = await loadFilesById(heroCodeFiles);
   const heroSpecMap = await loadFilesById(heroSpecFiles);
   const syntaxDemoCodeMap = await loadFilesById(syntaxDemoCodeFiles);
@@ -80,6 +82,7 @@ export default async function Home() {
       <Navbar links={navigationLinks} />
       <Hero
         ids={heroIds}
+        latestVersion={latestVersion}
         phrasesById={heroPhrases}
         codeMap={heroCodeMap}
         specMap={heroSpecMap}

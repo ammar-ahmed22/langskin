@@ -39,8 +39,8 @@ export function Hero(props: HeroProps) {
               <Terminal className="size-3 text-sky-400" />
               <span className="text-zinc-500">npm install</span>
               <span className="text-zinc-200">langskin</span>
-              <span className="ml-0.5 rounded bg-sky-500/15 px-1.5 py-0.5 text-[10px] text-sky-400">
-                v0.3.2
+              <span className="ml-0.5 rounded bg-sky-500/15 px-1.5 py-0.5 text-xs text-sky-400">
+                v{props.latestVersion}
               </span>
             </a>
 

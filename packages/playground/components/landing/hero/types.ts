@@ -8,6 +8,7 @@ export type HeroCodeWindowProps = {
 
 export type HeroProps = {
   ids: string[];
+  latestVersion: string;
   phrasesById: Record<string, string>;
   codeMap: Record<string, string>;
   specMap: Record<string, string>;
