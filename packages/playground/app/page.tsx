@@ -57,14 +57,16 @@ const navigationLinks: NavigationLink[] = [
     label: "Install",
     href: "#install",
   },
-  {
-    label: "Playground",
-    href: "/playground",
-  },
-  {
-    label: "Docs",
-    href: "/docs",
-  },
+  // TODO: Update this when the playground is ready
+  // {
+  //   label: "Playground",
+  //   href: "/playground",
+  // },
+  // TODO: Update this when the docs are ready
+  // {
+  //   label: "Docs",
+  //   href: "/docs",
+  // },
 ];
 
 export default async function Home() {
