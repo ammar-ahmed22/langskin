@@ -53,12 +53,12 @@ const navigationLinks: NavigationLink[] = [
     href: "#features",
   },
   {
-    label: "Playground",
-    href: "/playground",
-  },
-  {
     label: "Install",
     href: "#install",
+  },
+  {
+    label: "Playground",
+    href: "/playground",
   },
   {
     label: "Docs",
@@ -78,7 +78,6 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar links={navigationLinks} />
-      {/* TODO: Code window should be stacked on mobile  */}
       <Hero
         ids={heroIds}
         phrasesById={heroPhrases}
