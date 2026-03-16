@@ -44,7 +44,8 @@
     "bump:patch": "npm version patch",
     "bump:minor": "npm version minor",
     "bump:major": "npm version major",
-    "publish:npm": "npm publish --access public"
+    "publish:npm": "npm publish --access public",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@commander-js/extra-typings": "^14.0.0",

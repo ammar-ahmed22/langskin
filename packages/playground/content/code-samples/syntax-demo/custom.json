@@ -1,0 +1,11 @@
+{
+  "keywords": {
+    "var": "define",
+    "fun": "proc",
+    "return": "emit",
+    "print": "log",
+    "if": "when",
+    "else": "otherwise",
+    "for": "each"
+  }
+}
