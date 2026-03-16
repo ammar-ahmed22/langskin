@@ -62,7 +62,7 @@ export default function CustomCodeBlock({
     <pre
       className={cn(
         // TODO: Use tailwindy classes here
-        "m-0 overflow-x-auto whitespace-pre font-mono text-[0.9rem] leading-[1.6] p-4 border",
+        "m-0 overflow-x-auto whitespace-pre font-mono text-sm p-4 border",
         className,
       )}
     >

@@ -1,0 +1,8 @@
+{
+  "keywords": {
+    "var": "define",
+    "fun": "proc",
+    "print": "log",
+    "return": "emit"
+  }
+}

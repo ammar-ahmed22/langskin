@@ -1,0 +1,11 @@
+{
+  "keywords": {
+    "var": "let",
+    "fun": "fun",
+    "return": "return",
+    "print": "print",
+    "if": "if",
+    "else": "else",
+    "for": "for"
+  }
+}

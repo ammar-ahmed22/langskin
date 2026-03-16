@@ -9,6 +9,17 @@ const eslintConfig = defineConfig([
   ...nextTs,
   eslintConfigPrettier,
   eslintConfigPrettierRecommended,
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
