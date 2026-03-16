@@ -1,10 +1,28 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Github } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
+import { SiGithub } from "react-icons/si";
 
-export function Navbar() {
+export type NavigationLink = {
+  label: string;
+  href: string;
+  external?: boolean;
+};
+
+export type NavbarProps = {
+  links: NavigationLink[];
+};
+
+export function Navbar({ links }: NavbarProps) {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 h-14 border-b border-white/[0.06] bg-background/80 backdrop-blur-sm">
+    <header className="fixed inset-x-0 top-0 z-50 h-14 border-b border-white/6 bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
@@ -17,47 +35,81 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Nav links */}
+        {/* Desktop nav links */}
         <nav className="hidden items-center gap-6 md:flex">
-          <Link
-            href="#features"
-            className="text-sm text-zinc-400 transition-colors hover:text-zinc-200"
-          >
-            Features
-          </Link>
-          <Link
-            href="/playground"
-            className="text-sm text-zinc-400 transition-colors hover:text-zinc-200"
-          >
-            Playground
-          </Link>
-          <Link
-            href="#install"
-            className="text-sm text-zinc-400 transition-colors hover:text-zinc-200"
-          >
-            Install
-          </Link>
-          <Link
-            href="https://github.com/ammar-ahmed22/langskin/tree/main/packages/core#readme"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-zinc-400 transition-colors hover:text-zinc-200"
-          >
-            Docs
-          </Link>
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noopener noreferrer" : undefined}
+              className="text-sm text-neutral-400 transition-colors hover:text-neutral-200"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* CTA */}
-        <Button variant="outline" size="sm" asChild>
+        {/* Desktop CTA */}
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="hidden md:inline-flex"
+        >
           <Link
             href="https://github.com/ammar-ahmed22/langskin"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Github className="size-3.5" />
+            <SiGithub className="size-3.5" />
             GitHub
           </Link>
         </Button>
+
+        {/* Mobile dropdown */}
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open menu"
+              >
+                <Menu className="size-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              {links.map((link) => (
+                <DropdownMenuItem key={link.href} asChild>
+                  <Link
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={
+                      link.external
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {link.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link
+                  href="https://github.com/ammar-ahmed22/langskin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <SiGithub className="size-3.5" />
+                  GitHub
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

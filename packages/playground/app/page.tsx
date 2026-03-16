@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/landing/navbar";
+import { Navbar, NavigationLink } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { SyntaxDemo } from "@/components/landing/syntax-demo";
 import { Features } from "@/components/landing/features";
@@ -47,6 +47,25 @@ const syntaxDemoSpecFiles = createFileSpecs(
   "json",
 );
 
+const navigationLinks: NavigationLink[] = [
+  {
+    label: "Features",
+    href: "#features",
+  },
+  {
+    label: "Playground",
+    href: "/playground",
+  },
+  {
+    label: "Install",
+    href: "#install",
+  },
+  {
+    label: "Docs",
+    href: "/docs",
+  },
+];
+
 export default async function Home() {
   const heroCodeMap = await loadFilesById(heroCodeFiles);
   const heroSpecMap = await loadFilesById(heroSpecFiles);
@@ -58,8 +77,7 @@ export default async function Home() {
   });
   return (
     <div className="min-h-screen bg-background">
-      {/* TODO: Gets hidden on mobile  */}
-      <Navbar />
+      <Navbar links={navigationLinks} />
       {/* TODO: Code window should be stacked on mobile  */}
       <Hero
         ids={heroIds}
